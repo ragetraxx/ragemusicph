@@ -8,27 +8,20 @@ const audioFiles = [
     "https://stream.zeno.fm/xnuifxjgpomvv"
 ];
 
-let currentAudio = null;
+let currentAudio = new Audio();
 
 function playAudio(index) {
-    // Stop the current audio if playing
-    if (currentAudio) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
+    // Stop current audio
+    if (!audioFiles[index]) {
+        console.error("Invalid index:", index);
+        return;
     }
-
-    // Use only one global audio element
-    if (!currentAudio) {
-        currentAudio = document.createElement("audio");
-        currentAudio.controls = true; // Add controls for debugging
-        document.body.appendChild(currentAudio);
-    }
-
-    // Update audio source and play
+    
+    currentAudio.pause();
     currentAudio.src = audioFiles[index];
-
-    // Play the stream with error handling
+    
+    // Play with user interaction
     currentAudio.play().catch(error => {
-        console.error("Playback failed:", error);
+        console.error("Playback error:", error);
     });
 }
