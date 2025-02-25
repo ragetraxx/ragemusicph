@@ -4,7 +4,7 @@ body {
     text-align: center;
     margin: 0;
     padding: 0;
-    height: 100vh; /* Full height */
+    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -23,7 +23,7 @@ body {
 .container {
     width: 90%;
     max-width: 600px;
-    background: rgba(51, 51, 51, 0.9); /* Semi-transparent */
+    background: rgba(51, 51, 51, 0.9);
     padding: 20px;
     border-radius: 15px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
@@ -88,4 +88,29 @@ button {
 
 button:hover {
     background: #c0392b;
+}
+
+/* Now Playing Info */
+#audio-info {
+    margin-top: 20px;
+    text-align: center;
+    color: white;
+}
+
+#audio-info img {
+    width: 120px;
+    height: 120px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    border: 3px solid #fff;
+}
+
+#audio-info h2 {
+    font-size: 20px;
+    margin: 5px 0;
+}
+
+#audio-info p {
+    font-size: 16px;
+    margin: 0;
 }
