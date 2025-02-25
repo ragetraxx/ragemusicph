@@ -7,6 +7,13 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
+    <!-- Background Video -->
+    <video id="bg-video" autoplay muted loop playsinline></video>
+
+    <!-- Dark Overlay -->
+    <div class="overlay"></div>
+
     <div class="container">
         <h1>Play Audio Files</h1>
         <div class="audio-list">
@@ -39,15 +46,9 @@
                 <button>iMix Radio</button>
             </div>
         </div>
-
-        <!-- Now Playing Section -->
-        <div id="audio-info">
-            <img id="album-art" src="" alt="Album Art">
-            <h2 id="track-title">Now Playing</h2>
-            <p id="artist-name"></p>
-        </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <script src="script.js"></script>
 </body>
 </html>
