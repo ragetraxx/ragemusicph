@@ -17,17 +17,18 @@ function playAudio(index) {
         currentAudio.currentTime = 0;
     }
 
-    // Select audio element or create one if not existing
-    let audioElement = document.getElementById(`audio${index}`);
-    
-    if (!audioElement) {
-        audioElement = document.createElement("audio");
-        audioElement.id = `audio${index}`;
-        audioElement.src = audioFiles[index];
-        document.body.appendChild(audioElement);
+    // Use only one global audio element
+    if (!currentAudio) {
+        currentAudio = document.createElement("audio");
+        currentAudio.controls = true; // Add controls for debugging
+        document.body.appendChild(currentAudio);
     }
 
-    // Play new audio
-    currentAudio = audioElement;
-    currentAudio.play();
+    // Update audio source and play
+    currentAudio.src = audioFiles[index];
+
+    // Play the stream with error handling
+    currentAudio.play().catch(error => {
+        console.error("Playback failed:", error);
+    });
 }
