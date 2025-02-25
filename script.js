@@ -8,18 +8,61 @@ const audioFiles = [
     "https://stream.zeno.fm/xnuifxjgpomvv"
 ];
 
+const audioDetails = [
+    {
+        title: "Rage Music Philippines",
+        artist: "Various Artists",
+        albumArt: "https://i.imgur.com/a3iXI35.png"
+    },
+    {
+        title: "Clubmix",
+        artist: "DJ Clubmix",
+        albumArt: "https://i.imgur.com/mtxns7R.png"
+    },
+    {
+        title: "Emotions",
+        artist: "Chill Vibes",
+        albumArt: "https://i.imgur.com/nOBT9dU.png"
+    },
+    {
+        title: "Scream Radio",
+        artist: "Rock Legends",
+        albumArt: "https://i.imgur.com/WhCxsNJ.png"
+    },
+    {
+        title: "Vibe Radio",
+        artist: "Vibe Masters",
+        albumArt: "https://i.imgur.com/JbkwiBQ.png"
+    },
+    {
+        title: "Hot Hiphop And RnB",
+        artist: "HipHop Stars",
+        albumArt: "https://i.imgur.com/nfFWyYR.png"
+    },
+    {
+        title: "iMix Radio",
+        artist: "Electronic Beats",
+        albumArt: "https://i.imgur.com/CLD1X1t.png"
+    }
+];
+
 let currentAudio = new Audio();
 
 function playAudio(index) {
-    if (!audioFiles[index]) return; // Prevent errors if the index is out of bounds
+    if (!audioFiles[index]) return;
 
-    // Stop the current audio if playing
+    // Stop and reset the current audio
     if (!currentAudio.paused) {
         currentAudio.pause();
         currentAudio.currentTime = 0;
     }
 
-    // Set the new source and play
+    // Set new audio source and play
     currentAudio.src = audioFiles[index];
     currentAudio.play();
+
+    // Update the info section
+    document.getElementById("track-title").textContent = audioDetails[index].title;
+    document.getElementById("artist-name").textContent = audioDetails[index].artist;
+    document.getElementById("album-art").src = audioDetails[index].albumArt;
 }
