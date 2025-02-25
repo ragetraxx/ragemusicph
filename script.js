@@ -11,17 +11,15 @@ const audioFiles = [
 let currentAudio = new Audio();
 
 function playAudio(index) {
-    // Stop current audio
-    if (!audioFiles[index]) {
-        console.error("Invalid index:", index);
-        return;
+    if (!audioFiles[index]) return; // Prevent errors if the index is out of bounds
+
+    // Stop the current audio if playing
+    if (!currentAudio.paused) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
     }
-    
-    currentAudio.pause();
+
+    // Set the new source and play
     currentAudio.src = audioFiles[index];
-    
-    // Play with user interaction
-    currentAudio.play().catch(error => {
-        console.error("Playback error:", error);
-    });
+    currentAudio.play();
 }
