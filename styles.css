@@ -1,41 +1,36 @@
 /* Fullscreen and Centered Design */
-body {
+body, html {
     font-family: Arial, sans-serif;
     text-align: center;
     margin: 0;
     padding: 0;
     height: 100vh;
+    width: 100vw;
     display: flex;
     justify-content: center;
     align-items: center;
     overflow: hidden;
     background: url('https://images.unsplash.com/photo-1487180144351-b8472da7d491?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&dl=eric-nopanen-8e0EHPUx3Mo-unsplash.jpg') center/cover no-repeat;
-    animation: moveBackground 30s linear infinite;
 }
 
-/* Moving Background Animation */
-@keyframes moveBackground {
-    0% { background-position: 0 0; }
-    100% { background-position: 100% 100%; }
-}
-
-/* Centered and Responsive Container */
+/* Container is 100% height & width */
 .container {
-    width: 90%;
-    max-width: 600px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     background: rgba(51, 51, 51, 0.9);
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    text-align: center;
 }
 
 /* Title Styling */
 h1 {
     color: #fff;
-    font-size: 24px;
+    font-size: 5vw;
     text-transform: uppercase;
     letter-spacing: 2px;
+    margin-bottom: 2vh;
 }
 
 /* Responsive Audio List */
@@ -43,14 +38,16 @@ h1 {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 10px;
+    gap: 2vw;
+    width: 90%;
+    max-width: 800px;
 }
 
 /* Individual Audio Item */
 .audio-item {
-    width: 100%;
+    width: 20vw;
     max-width: 150px;
-    padding: 10px;
+    padding: 1vw;
     background: #111;
     border-radius: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
@@ -64,25 +61,25 @@ h1 {
 
 /* Responsive Audio Logos */
 img {
-    width: 100px;
-    height: 100px;
+    width: 80%;
+    height: auto;
+    max-width: 100px;
     border-radius: 50%;
-    margin-bottom: 10px;
+    margin-bottom: 1vh;
     border: 3px solid #fff;
-    max-width: 100%;
 }
 
-/* Responsive Buttons */
+/* Buttons */
 button {
     background: #e74c3c;
     color: white;
     border: none;
-    padding: 12px 18px;
-    font-size: 16px;
+    padding: 2vw;
+    font-size: 1.5vw;
     cursor: pointer;
     border-radius: 5px;
     transition: 0.3s;
-    width: 100%;
+    width: 90%;
     max-width: 200px;
 }
 
@@ -92,25 +89,47 @@ button:hover {
 
 /* Now Playing Info */
 #audio-info {
-    margin-top: 20px;
+    margin-top: 2vh;
     text-align: center;
     color: white;
+    width: 100%;
 }
 
 #audio-info img {
-    width: 120px;
-    height: 120px;
+    width: 15vw;
+    height: auto;
+    max-width: 150px;
     border-radius: 10px;
-    margin-bottom: 10px;
+    margin-bottom: 1vh;
     border: 3px solid #fff;
 }
 
 #audio-info h2 {
-    font-size: 20px;
+    font-size: 3vw;
     margin: 5px 0;
 }
 
 #audio-info p {
-    font-size: 16px;
+    font-size: 2vw;
     margin: 0;
+}
+
+/* Responsive for Mobile */
+@media (max-width: 600px) {
+    h1 {
+        font-size: 6vw;
+    }
+    .audio-item {
+        width: 40vw;
+    }
+    button {
+        font-size: 4vw;
+        padding: 3vw;
+    }
+    #audio-info h2 {
+        font-size: 5vw;
+    }
+    #audio-info p {
+        font-size: 3vw;
+    }
 }
