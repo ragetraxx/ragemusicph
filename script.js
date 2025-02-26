@@ -34,11 +34,15 @@ let currentPlayingIndex = null; // Track the currently playing audio
 function playAudio(index) {
     if (!audioFiles[index]) return;
 
-    // If the same button is clicked again, toggle play/pause
+    let clickedItem = document.querySelectorAll(".audio-item")[index];
+
+    // If the same button is clicked again, return it to its original position and stop the audio
     if (currentPlayingIndex === index && !currentAudio.paused) {
         currentAudio.pause();
-        document.querySelectorAll(".audio-item img")[index].classList.remove("spinning");
-        currentPlayingIndex = null; // Reset the playing index
+        clickedItem.classList.remove("pop-up");
+        clickedItem.querySelector("img").classList.remove("spinning");
+        document.body.classList.remove("dimmed");
+        currentPlayingIndex = null; // Reset playing index
         return;
     }
 
@@ -48,11 +52,12 @@ function playAudio(index) {
         currentAudio.currentTime = 0;
     }
 
-    // Remove spin class from previously playing image
+    // Remove pop-up and spin class from the previously playing item
     if (currentPlayingIndex !== null) {
-        let previousItem = document.querySelectorAll(".audio-item img")[currentPlayingIndex];
+        let previousItem = document.querySelectorAll(".audio-item")[currentPlayingIndex];
         if (previousItem) {
-            previousItem.classList.remove("spinning");
+            previousItem.classList.remove("pop-up");
+            previousItem.querySelector("img").classList.remove("spinning");
         }
     }
 
@@ -60,9 +65,12 @@ function playAudio(index) {
     currentAudio.src = audioFiles[index];
     currentAudio.play();
 
-    // Add spin class to the clicked image
-    let clickedItem = document.querySelectorAll(".audio-item img")[index];
-    clickedItem.classList.add("spinning");
+    // Add pop-up and spin class to the clicked item
+    clickedItem.classList.add("pop-up");
+    clickedItem.querySelector("img").classList.add("spinning");
+
+    // Dim the background
+    document.body.classList.add("dimmed");
 
     // Update currently playing index
     currentPlayingIndex = index;
