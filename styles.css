@@ -1,12 +1,15 @@
-/* Background Video */
+/* Background Video - Zoom Out & Fixed Position */
 #bg-video {
     position: fixed;
-    top: 0;
-    left: 0;
+    top: 50%;
+    left: 50%;
     width: 100vw;
     height: 100vh;
     object-fit: cover;
     z-index: -1;
+    transform: scale(0.8) translate(-50%, -50%);
+    transform-origin: center;
+    transition: transform 0.5s ease-in-out;
 }
 
 /* Dark Overlay */
