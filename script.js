@@ -1,23 +1,3 @@
-const m3u8VideoURL = "https://epg.provider.plex.tv/library/parts/5e20b730f2f8d5003d739db7-61aaa014784a2161d3caf7fd.m3u8?includeAllStreams=1&X-Plex-Product=Plex+Mediaverse&X-Plex-Token=PG8cze1ATcsgtYs_-Kxg"; // Replace with your actual M3U8 link
-
-function loadM3U8Video() {
-    const video = document.getElementById('bg-video');
-
-    if (Hls.isSupported()) {
-        const hls = new Hls();
-        hls.loadSource(m3u8VideoURL);
-        hls.attachMedia(video);
-        hls.on(Hls.Events.MANIFEST_PARSED, function () {
-            video.play();
-        });
-    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        video.src = m3u8VideoURL;
-        video.play();
-    }
-}
-
-document.addEventListener("DOMContentLoaded", loadM3U8Video);
-
 const audioFiles = [
     "https://stream.zeno.fm/q1n2wyfs7x8uv",
     "https://stream.zeno.fm/d42hdvx96zhvv",
@@ -29,20 +9,19 @@ const audioFiles = [
 ];
 
 let currentAudio = new Audio();
-let currentPlayingIndex = null; // Track the currently playing audio
+let currentPlayingIndex = null;
 
 function playAudio(index) {
     if (!audioFiles[index]) return;
 
     let clickedItem = document.querySelectorAll(".audio-item")[index];
 
-    // If the same button is clicked again, return it to its original position and stop the audio
+    // If the same button is clicked again, stop the audio and reset player
     if (currentPlayingIndex === index && !currentAudio.paused) {
         currentAudio.pause();
-        clickedItem.classList.remove("pop-up");
         clickedItem.querySelector("img").classList.remove("spinning");
-        document.body.classList.remove("dimmed");
-        currentPlayingIndex = null; // Reset playing index
+        resetMusicPlayer();
+        currentPlayingIndex = null;
         return;
     }
 
@@ -52,11 +31,10 @@ function playAudio(index) {
         currentAudio.currentTime = 0;
     }
 
-    // Remove pop-up and spin class from the previously playing item
+    // Remove spin class from previous item
     if (currentPlayingIndex !== null) {
         let previousItem = document.querySelectorAll(".audio-item")[currentPlayingIndex];
         if (previousItem) {
-            previousItem.classList.remove("pop-up");
             previousItem.querySelector("img").classList.remove("spinning");
         }
     }
@@ -65,13 +43,24 @@ function playAudio(index) {
     currentAudio.src = audioFiles[index];
     currentAudio.play();
 
-    // Add pop-up and spin class to the clicked item
-    clickedItem.classList.add("pop-up");
+    // Add spin class to clicked item
     clickedItem.querySelector("img").classList.add("spinning");
-
-    // Dim the background
-    document.body.classList.add("dimmed");
 
     // Update currently playing index
     currentPlayingIndex = index;
+
+    // Fetch metadata
+    updateMusicPlayer("Loading...", "Unknown Artist", "https://via.placeholder.com/150");
+}
+
+// Reset music player when stopping audio
+function resetMusicPlayer() {
+    updateMusicPlayer("Now Playing", "Artist", "https://via.placeholder.com/150");
+}
+
+// Update music player metadata
+function updateMusicPlayer(title, artist, albumArt) {
+    document.getElementById("song-title").innerText = title;
+    document.getElementById("artist-name").innerText = artist;
+    document.getElementById("album-art").src = albumArt;
 }
