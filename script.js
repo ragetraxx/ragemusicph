@@ -1,11 +1,7 @@
 const audioFiles = [
     "https://stream.zeno.fm/q1n2wyfs7x8uv",
     "https://stream.zeno.fm/d42hdvx96zhvv",
-    "https://stream.zeno.fm/03v7z8edgphvv",
-    "https://stream.zeno.fm/c3z135w8zxhvv",
-    "https://stream.zeno.fm/4k8qf4raqy8uv",
-    "https://stream.zeno.fm/qrhuqbnm208uv",
-    "https://stream.zeno.fm/xnuifxjgpomvv"
+    "https://stream.zeno.fm/03v7z8edgphvv"
 ];
 
 let currentAudio = new Audio();
@@ -16,7 +12,7 @@ function playAudio(index) {
 
     let clickedItem = document.querySelectorAll(".audio-item")[index];
 
-    // If the same button is clicked again, stop the audio and reset player
+    // If clicking the same button, stop playback
     if (currentPlayingIndex === index && !currentAudio.paused) {
         currentAudio.pause();
         clickedItem.querySelector("img").classList.remove("spinning");
@@ -25,13 +21,13 @@ function playAudio(index) {
         return;
     }
 
-    // Pause and reset previous audio
+    // Stop previous audio
     if (!currentAudio.paused) {
         currentAudio.pause();
         currentAudio.currentTime = 0;
     }
 
-    // Remove spin class from previous item
+    // Remove spin class from the previous item
     if (currentPlayingIndex !== null) {
         let previousItem = document.querySelectorAll(".audio-item")[currentPlayingIndex];
         if (previousItem) {
@@ -43,22 +39,40 @@ function playAudio(index) {
     currentAudio.src = audioFiles[index];
     currentAudio.play();
 
-    // Add spin class to clicked item
+    // Add spinning class to clicked item
     clickedItem.querySelector("img").classList.add("spinning");
 
     // Update currently playing index
     currentPlayingIndex = index;
 
     // Fetch metadata
-    updateMusicPlayer("Loading...", "Unknown Artist", "https://via.placeholder.com/150");
+    fetchMetadata(index);
 }
 
-// Reset music player when stopping audio
+// Reset music player
 function resetMusicPlayer() {
-    updateMusicPlayer("Now Playing", "Artist", "https://via.placeholder.com/150");
+    updateMusicPlayer("Now Playing", "Unknown Artist", "https://via.placeholder.com/150");
 }
 
-// Update music player metadata
+// Fetch metadata
+async function fetchMetadata(index) {
+    try {
+        const streamUrl = audioFiles[index];
+        const response = await fetch(streamUrl, { method: "HEAD" });
+
+        if (response.headers.get("icy-metaint")) {
+            const metadata = await response.headers.get("icy-metaint");
+            updateMusicPlayer(metadata, "Live Radio", "https://via.placeholder.com/150");
+        } else {
+            resetMusicPlayer();
+        }
+    } catch (error) {
+        console.error("Metadata fetch error:", error);
+        resetMusicPlayer();
+    }
+}
+
+// Update the music player UI
 function updateMusicPlayer(title, artist, albumArt) {
     document.getElementById("song-title").innerText = title;
     document.getElementById("artist-name").innerText = artist;
