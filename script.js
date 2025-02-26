@@ -29,15 +29,33 @@ const audioFiles = [
 ];
 
 let currentAudio = new Audio();
+let currentPlayingIndex = null; // Track the currently playing audio
 
 function playAudio(index) {
     if (!audioFiles[index]) return;
 
+    // Pause and reset previous audio
     if (!currentAudio.paused) {
         currentAudio.pause();
         currentAudio.currentTime = 0;
     }
 
+    // Remove spin class from previously playing image
+    if (currentPlayingIndex !== null) {
+        let previousItem = document.querySelectorAll(".audio-item img")[currentPlayingIndex];
+        if (previousItem) {
+            previousItem.classList.remove("spinning");
+        }
+    }
+
+    // Play new audio
     currentAudio.src = audioFiles[index];
     currentAudio.play();
+
+    // Add spin class to the clicked image
+    let clickedItem = document.querySelectorAll(".audio-item img")[index];
+    clickedItem.classList.add("spinning");
+
+    // Update currently playing index
+    currentPlayingIndex = index;
 }
