@@ -34,6 +34,14 @@ let currentPlayingIndex = null; // Track the currently playing audio
 function playAudio(index) {
     if (!audioFiles[index]) return;
 
+    // If the same button is clicked again, toggle play/pause
+    if (currentPlayingIndex === index && !currentAudio.paused) {
+        currentAudio.pause();
+        document.querySelectorAll(".audio-item img")[index].classList.remove("spinning");
+        currentPlayingIndex = null; // Reset the playing index
+        return;
+    }
+
     // Pause and reset previous audio
     if (!currentAudio.paused) {
         currentAudio.pause();
