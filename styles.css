@@ -107,7 +107,7 @@ h1 {
 }
 
 .audio-item img.spinning {
-    animation: spin 1s linear infinite;
+    animation: spin 2s linear infinite;
 }
 
 /* Buttons */
