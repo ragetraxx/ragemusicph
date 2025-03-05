@@ -1,4 +1,4 @@
-const m3u8VideoURL = "https://jmp2.uk/sam-USBC3900009K5.m3u8"; // Replace with your actual M3U8 link
+const m3u8VideoURL = "https://epg.provider.plex.tv/library/parts/5e20b730f2f8d5003d739db7-61aaa17a784a2161d3caf801.m3u8?includeAllStreams=1&X-Plex-Product=Plex+Mediaverse&X-Plex-Token=PG8cze1ATcsgtYs_-Kxg"; // Replace with your actual M3U8 link
 
 function loadM3U8Video() {
     const video = document.getElementById('bg-video');
