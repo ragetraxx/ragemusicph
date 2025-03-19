@@ -1,4 +1,4 @@
-const m3u8VideoURL = "https://ssh101stream.ssh101.com/akamaissh101/ssh101/ragemusicph/playlist.m3u8"; // Replace with your actual M3U8 link
+const m3u8VideoURL = "https://s72.ipcamlive.com/streams/48skntbrcyvxyduzx/stream.m3u8"; // Replace with your actual M3U8 link
 
 function loadM3U8Video() {
     const video = document.getElementById('bg-video');
