@@ -1,14 +1,12 @@
-/* Background Video - Zoom Out, Fixed & Fitted */
+/* Background Video - Fixed & Fully Fitted */
 #bg-video {
     position: fixed;
     top: 0;
     left: 0;
-    width: 125vw; /* Increase width to maintain full coverage */
-    height: 125vh; /* Increase height to maintain full coverage */
+    width: 100vw;
+    height: 100vh;
     object-fit: cover;
     z-index: -1;
-    transform: translate(-50%, -50%);
-    transition: all 0.5s ease-in-out;
 }
 
 /* Dark Overlay */
