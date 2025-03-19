@@ -1,8 +1,8 @@
 /* Background Video - Zoom Out, Fixed & Fitted */
 #bg-video {
     position: fixed;
-    top: 25%;
-    left: 25%;
+    top: 0;
+    left: 0;
     width: 125vw; /* Increase width to maintain full coverage */
     height: 125vh; /* Increase height to maintain full coverage */
     object-fit: cover;
