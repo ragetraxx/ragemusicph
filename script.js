@@ -1,4 +1,4 @@
-const m3u8VideoURL = "https://s72.ipcamlive.com/streams/48vzkeuax9kli6pgf/stream.m3u8"; // Replace with your actual M3U8 link
+const m3u8VideoURL = "https://cdn-002.whatsupcams.com/hls/hr_jelsa07.m3u8"; // Replace with your actual M3U8 link
 
 function loadM3U8Video() {
     const video = document.getElementById('bg-video');
