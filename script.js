@@ -1,4 +1,4 @@
-const m3u8VideoURL = "https://dash2.antik.sk/live/test_plane_spotting_atk_tv/playlist.m3u8"; // Replace with your actual M3U8 link
+const m3u8VideoURL = "https://stream.profi-net.sk/donovaly/DONOVALY.stream/playlist.m3u8"; // Replace with your actual M3U8 link
 
 function loadM3U8Video() {
     const video = document.getElementById('bg-video');
