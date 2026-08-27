@@ -3,14 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Mitigates cross-origin Referer restrictions for stream CDNs like Surfline -->
+    <meta name="referrer" content="no-referrer">
     <title>Rage Media Group</title>
-    <!-- Include HLS.js Library in Head -->
+    <!-- Include HLS.js Library -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-    <!-- Background Video -->
+    <!-- Background Video Element -->
     <video id="bg-video" autoplay muted loop playsinline preload="auto">
         <p>Your browser does not support HTML5 video.</p>
     </video>
