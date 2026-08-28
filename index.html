@@ -1,59 +1,294 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Mitigates cross-origin Referer restrictions for stream CDNs like Surfline -->
-    <meta name="referrer" content="no-referrer">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <!-- Prevents unnecessary Referer information from being sent -->
+    <meta
+        name="referrer"
+        content="no-referrer"
+    >
+
     <title>Rage Media Group</title>
-    <!-- Include HLS.js Library -->
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <link rel="stylesheet" href="styles.css">
+
+
+    <!-- ==========================================
+         HLS.JS
+         MUST LOAD BEFORE script.js
+         ========================================== -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/hls.js@latest">
+    </script>
+
+
+    <!-- ==========================================
+         STYLESHEET
+         ========================================== -->
+
+    <link
+        rel="stylesheet"
+        href="styles.css"
+    >
+
 </head>
+
+
 <body>
 
-    <!-- Background Video Element -->
-    <video id="bg-video" autoplay muted loop playsinline preload="auto">
-        <p>Your browser does not support HTML5 video.</p>
+
+    <!-- ==========================================
+         BACKGROUND VIDEO
+         ========================================== -->
+
+    <video
+        id="bg-video"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="auto"
+        aria-hidden="true"
+    >
+        Your browser does not support HTML5 video.
     </video>
 
-    <!-- Dark Overlay -->
-    <div class="overlay" aria-hidden="true"></div>
+
+    <!-- ==========================================
+         DARK OVERLAY
+         ========================================== -->
+
+    <div
+        class="overlay"
+        aria-hidden="true">
+    </div>
+
+
+    <!-- ==========================================
+         MAIN CONTENT
+         ========================================== -->
 
     <main class="container">
+
         <h1>Click to Listen</h1>
-        <div class="audio-list" role="region" aria-label="Audio Channels">
-            <div class="audio-item" onclick="playAudio(0)" role="button" tabindex="0" aria-label="Play Rage Music Philippines">
-                <img src="https://i.imgur.com/a3iXI35.png" alt="Rage Music Philippines logo">
-                <button type="button" tabindex="-1">Rage Music Philippines</button>
+
+
+        <div
+            class="audio-list"
+            role="region"
+            aria-label="Audio Channels"
+        >
+
+
+            <!-- ======================================
+                 RAGE MUSIC PHILIPPINES
+                 ====================================== -->
+
+            <div
+                class="audio-item"
+                onclick="playAudio(0)"
+                role="button"
+                tabindex="0"
+                aria-label="Play Rage Music Philippines"
+            >
+
+                <img
+                    src="https://i.imgur.com/a3iXI35.png"
+                    alt="Rage Music Philippines logo"
+                >
+
+                <button
+                    type="button"
+                    tabindex="-1"
+                >
+                    Rage Music Philippines
+                </button>
+
             </div>
-            <div class="audio-item" onclick="playAudio(1)" role="button" tabindex="0" aria-label="Play Clubmix">
-                <img src="https://i.imgur.com/mtxns7R.png" alt="Clubmix logo">
-                <button type="button" tabindex="-1">Clubmix</button>
+
+
+            <!-- ======================================
+                 CLUBMIX
+                 ====================================== -->
+
+            <div
+                class="audio-item"
+                onclick="playAudio(1)"
+                role="button"
+                tabindex="0"
+                aria-label="Play Clubmix"
+            >
+
+                <img
+                    src="https://i.imgur.com/mtxns7R.png"
+                    alt="Clubmix logo"
+                >
+
+                <button
+                    type="button"
+                    tabindex="-1"
+                >
+                    Clubmix
+                </button>
+
             </div>
-            <div class="audio-item" onclick="playAudio(2)" role="button" tabindex="0" aria-label="Play Emotions">
-                <img src="https://i.imgur.com/nOBT9dU.png" alt="Emotions logo">
-                <button type="button" tabindex="-1">Emotions</button>
+
+
+            <!-- ======================================
+                 EMOTIONS
+                 ====================================== -->
+
+            <div
+                class="audio-item"
+                onclick="playAudio(2)"
+                role="button"
+                tabindex="0"
+                aria-label="Play Emotions"
+            >
+
+                <img
+                    src="https://i.imgur.com/nOBT9dU.png"
+                    alt="Emotions logo"
+                >
+
+                <button
+                    type="button"
+                    tabindex="-1"
+                >
+                    Emotions
+                </button>
+
             </div>
-            <div class="audio-item" onclick="playAudio(3)" role="button" tabindex="0" aria-label="Play Scream Radio">
-                <img src="https://i.imgur.com/WhCxsNJ.png" alt="Scream Radio logo">
-                <button type="button" tabindex="-1">Scream Radio</button>
+
+
+            <!-- ======================================
+                 SCREAM RADIO
+                 ====================================== -->
+
+            <div
+                class="audio-item"
+                onclick="playAudio(3)"
+                role="button"
+                tabindex="0"
+                aria-label="Play Scream Radio"
+            >
+
+                <img
+                    src="https://i.imgur.com/WhCxsNJ.png"
+                    alt="Scream Radio logo"
+                >
+
+                <button
+                    type="button"
+                    tabindex="-1"
+                >
+                    Scream Radio
+                </button>
+
             </div>
-            <div class="audio-item" onclick="playAudio(4)" role="button" tabindex="0" aria-label="Play Vibe Radio">
-                <img src="https://i.imgur.com/JbkwiBQ.png" alt="Vibe Radio logo">
-                <button type="button" tabindex="-1">Vibe Radio</button>
+
+
+            <!-- ======================================
+                 VIBE RADIO
+                 ====================================== -->
+
+            <div
+                class="audio-item"
+                onclick="playAudio(4)"
+                role="button"
+                tabindex="0"
+                aria-label="Play Vibe Radio"
+            >
+
+                <img
+                    src="https://i.imgur.com/JbkwiBQ.png"
+                    alt="Vibe Radio logo"
+                >
+
+                <button
+                    type="button"
+                    tabindex="-1"
+                >
+                    Vibe Radio
+                </button>
+
             </div>
-            <div class="audio-item" onclick="playAudio(5)" role="button" tabindex="0" aria-label="Play Hot Hiphop And RnB">
-                <img src="https://i.imgur.com/nfFWyYR.png" alt="Hot Hiphop And RnB logo">
-                <button type="button" tabindex="-1">Hot Hiphop And RnB</button>
+
+
+            <!-- ======================================
+                 HOT HIPHOP AND RNB
+                 ====================================== -->
+
+            <div
+                class="audio-item"
+                onclick="playAudio(5)"
+                role="button"
+                tabindex="0"
+                aria-label="Play Hot Hiphop And RnB"
+            >
+
+                <img
+                    src="https://i.imgur.com/nfFWyYR.png"
+                    alt="Hot Hiphop And RnB logo"
+                >
+
+                <button
+                    type="button"
+                    tabindex="-1"
+                >
+                    Hot Hiphop And RnB
+                </button>
+
             </div>
-            <div class="audio-item" onclick="playAudio(6)" role="button" tabindex="0" aria-label="Play iMix Radio">
-                <img src="https://i.imgur.com/CLD1X1t.png" alt="iMix Radio logo">
-                <button type="button" tabindex="-1">iMix Radio</button>
+
+
+            <!-- ======================================
+                 IMIX RADIO
+                 ====================================== -->
+
+            <div
+                class="audio-item"
+                onclick="playAudio(6)"
+                role="button"
+                tabindex="0"
+                aria-label="Play iMix Radio"
+            >
+
+                <img
+                    src="https://i.imgur.com/CLD1X1t.png"
+                    alt="iMix Radio logo"
+                >
+
+                <button
+                    type="button"
+                    tabindex="-1"
+                >
+                    iMix Radio
+                </button>
+
             </div>
+
+
         </div>
+
     </main>
 
+
+    <!-- ==========================================
+         JAVASCRIPT
+         Load AFTER the HTML elements
+         ========================================== -->
+
     <script src="script.js"></script>
+
+
 </body>
+
 </html>
