@@ -1,4 +1,4 @@
-const m3u8VideoURL = "https://hls.cdn-surfline.com/ohio/sltv-global/playlist.m3u8";
+const m3u8VideoURL = "https://hls.cdn-surfline.com/east-au/ph-sabangbeach/playlist.m3u8";
 
 // --- BACKGROUND VIDEO PLAYER ---
 function loadM3U8Video() {
