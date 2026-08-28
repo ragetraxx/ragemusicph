@@ -1,29 +1,36 @@
 // ======================================================
-// CONFIGURATION
+// RAGE MEDIA GROUP
+// Background HLS Video + Audio Streams
 // ======================================================
 
-// IMPORTANT:
-// Use the RAW URL only.
-// Do NOT use Markdown format: [URL](URL)
+
+// ======================================================
+// BACKGROUND VIDEO CONFIGURATION
+// ======================================================
 
 const m3u8VideoURL =
     "https://hls.cdn-surfline.com/east-au/ph-sabangbeach/playlist.m3u8";
 
 
 // ======================================================
-// BACKGROUND M3U8 VIDEO PLAYER
+// BACKGROUND VIDEO PLAYER
 // ======================================================
 
 function loadM3U8Video() {
 
-    const video = document.getElementById("bg-video");
+    const video =
+        document.getElementById("bg-video");
+
 
     if (!video) {
+
         console.error(
-            "Background video element with ID 'bg-video' was not found."
+            "ERROR: #bg-video was not found."
         );
+
         return;
     }
+
 
     // --------------------------------------------------
     // Video settings
@@ -34,47 +41,130 @@ function loadM3U8Video() {
     video.playsInline = true;
     video.loop = true;
 
-    video.setAttribute("muted", "");
-    video.setAttribute("autoplay", "");
-    video.setAttribute("playsinline", "");
+    video.setAttribute(
+        "muted",
+        ""
+    );
 
-    // Prevent unnecessary controls
-    video.controls = false;
+    video.setAttribute(
+        "autoplay",
+        ""
+    );
+
+    video.setAttribute(
+        "playsinline",
+        ""
+    );
+
 
     // --------------------------------------------------
-    // Play function
+    // Playback function
     // --------------------------------------------------
 
-    function playVideo() {
+    function startVideo() {
 
         video.muted = true;
 
-        const playPromise = video.play();
 
-        if (playPromise !== undefined) {
+        const promise =
+            video.play();
 
-            playPromise
+
+        if (promise !== undefined) {
+
+            promise
                 .then(() => {
 
                     console.log(
-                        "Background HLS video is playing."
+                        "BACKGROUND VIDEO: Playing"
                     );
 
                 })
                 .catch((error) => {
 
                     console.warn(
-                        "Background video autoplay was prevented:",
+                        "BACKGROUND VIDEO: Autoplay failed",
                         error
                     );
 
                 });
+
         }
+
+    }
+
+
+    // ==================================================
+    // NATIVE HLS
+    // Safari / iOS
+    // ==================================================
+
+    if (
+        video.canPlayType(
+            "application/vnd.apple.mpegurl"
+        )
+    ) {
+
+        console.log(
+            "BACKGROUND VIDEO: Native HLS detected."
+        );
+
+
+        video.src =
+            m3u8VideoURL;
+
+
+        video.addEventListener(
+            "loadedmetadata",
+            function () {
+
+                console.log(
+                    "BACKGROUND VIDEO: Metadata loaded."
+                );
+
+                startVideo();
+
+            },
+            {
+                once: true
+            }
+        );
+
+
+        video.addEventListener(
+            "canplay",
+            function () {
+
+                if (video.paused) {
+
+                    startVideo();
+
+                }
+
+            }
+        );
+
+
+        video.addEventListener(
+            "error",
+            function () {
+
+                console.error(
+                    "BACKGROUND VIDEO: Native HLS error:",
+                    video.error
+                );
+
+            }
+        );
+
+
+        return;
     }
 
 
     // ==================================================
     // HLS.JS
+    // Chrome / Firefox / Edge
     // ==================================================
 
     if (
@@ -82,51 +172,38 @@ function loadM3U8Video() {
         Hls.isSupported()
     ) {
 
-        console.log("HLS.js is supported.");
-
-        const hls = new Hls({
-
-            enableWorker: true,
-
-            lowLatencyMode: true,
-
-            backBufferLength: 30,
-
-            maxBufferLength: 30,
-
-            maxMaxBufferLength: 60,
-
-            liveSyncDurationCount: 3,
-
-            liveMaxLatencyDurationCount: 6,
-
-            fragLoadingMaxRetry: 6,
-
-            manifestLoadingMaxRetry: 6,
-
-            levelLoadingMaxRetry: 6,
-
-            fragLoadingRetryDelay: 1000,
-
-            manifestLoadingRetryDelay: 1000,
-
-            levelLoadingRetryDelay: 1000
-
-        });
-
-
-        // --------------------------------------------------
-        // Load HLS stream
-        // --------------------------------------------------
-
         console.log(
-            "Loading HLS stream:",
-            m3u8VideoURL
+            "BACKGROUND VIDEO: HLS.js detected."
         );
 
-        hls.loadSource(m3u8VideoURL);
 
-        hls.attachMedia(video);
+        const hls =
+            new Hls({
+
+                enableWorker: true,
+
+                lowLatencyMode: true,
+
+                backBufferLength: 30,
+
+                maxBufferLength: 30,
+
+                maxMaxBufferLength: 60,
+
+                liveSyncDurationCount: 3,
+
+                liveMaxLatencyDurationCount: 6
+
+            });
+
+
+        // --------------------------------------------------
+        // Attach HLS to video
+        // --------------------------------------------------
+
+        hls.attachMedia(
+            video
+        );
 
 
         // --------------------------------------------------
@@ -138,7 +215,12 @@ function loadM3U8Video() {
             function () {
 
                 console.log(
-                    "HLS media attached."
+                    "BACKGROUND VIDEO: Media attached."
+                );
+
+
+                hls.loadSource(
+                    m3u8VideoURL
                 );
 
             }
@@ -146,7 +228,7 @@ function loadM3U8Video() {
 
 
         // --------------------------------------------------
-        // Manifest loaded
+        // Manifest parsed
         // --------------------------------------------------
 
         hls.on(
@@ -157,26 +239,43 @@ function loadM3U8Video() {
             ) {
 
                 console.log(
-                    "HLS manifest loaded successfully.",
+                    "BACKGROUND VIDEO: HLS manifest loaded.",
                     data
                 );
 
-                playVideo();
+
+                startVideo();
 
             }
         );
 
 
         // --------------------------------------------------
-        // Fragment loaded
+        // Video playing
         // --------------------------------------------------
 
-        hls.on(
-            Hls.Events.FRAG_LOADED,
+        video.addEventListener(
+            "playing",
             function () {
 
                 console.log(
-                    "HLS video segment loaded."
+                    "BACKGROUND VIDEO: PLAYING"
+                );
+
+            }
+        );
+
+
+        // --------------------------------------------------
+        // Buffering
+        // --------------------------------------------------
+
+        video.addEventListener(
+            "waiting",
+            function () {
+
+                console.log(
+                    "BACKGROUND VIDEO: Buffering..."
                 );
 
             }
@@ -195,173 +294,96 @@ function loadM3U8Video() {
             ) {
 
                 console.error(
-                    "HLS error:",
+                    "BACKGROUND VIDEO: HLS ERROR",
                     data
                 );
 
 
                 if (!data.fatal) {
+
                     return;
+
                 }
 
 
-                switch (data.type) {
-
-
-                    // --------------------------------------
-                    // Network error
-                    // --------------------------------------
-
-                    case Hls.ErrorTypes.NETWORK_ERROR:
-
-                        console.warn(
-                            "Fatal HLS network error. Restarting stream..."
-                        );
-
-                        setTimeout(
-                            function () {
-
-                                try {
-
-                                    hls.startLoad();
-
-                                } catch (error) {
-
-                                    console.error(
-                                        "Unable to restart HLS:",
-                                        error
-                                    );
-
-                                }
-
-                            },
-                            2000
-                        );
-
-                        break;
-
-
-                    // --------------------------------------
-                    // Media error
-                    // --------------------------------------
-
-                    case Hls.ErrorTypes.MEDIA_ERROR:
-
-                        console.warn(
-                            "Fatal HLS media error. Attempting recovery..."
-                        );
-
-                        try {
-
-                            hls.recoverMediaError();
-
-                        } catch (error) {
-
-                            console.error(
-                                "Media recovery failed:",
-                                error
-                            );
-
-                            hls.destroy();
-
-                        }
-
-                        break;
-
-
-                    // --------------------------------------
-                    // Unknown fatal error
-                    // --------------------------------------
-
-                    default:
-
-                        console.error(
-                            "Fatal HLS error. Destroying player."
-                        );
-
-                        hls.destroy();
-
-                        // Attempt to reload after a delay
-
-                        setTimeout(
-                            function () {
-
-                                loadM3U8Video();
-
-                            },
-                            5000
-                        );
-
-                        break;
-                }
-
-            }
-        );
-
-
-        // --------------------------------------------------
-        // Video errors
-        // --------------------------------------------------
-
-        video.addEventListener(
-            "error",
-            function () {
-
-                console.error(
-                    "HTML5 video error:",
-                    video.error
-                );
-
-            }
-        );
-
-
-        // --------------------------------------------------
-        // Video waiting/buffering
-        // --------------------------------------------------
-
-        video.addEventListener(
-            "waiting",
-            function () {
-
-                console.log(
-                    "Background video is buffering..."
-                );
-
-            }
-        );
-
-
-        // --------------------------------------------------
-        // Video playing
-        // --------------------------------------------------
-
-        video.addEventListener(
-            "playing",
-            function () {
-
-                console.log(
-                    "Background video is now playing."
-                );
-
-            }
-        );
-
-
-        // --------------------------------------------------
-        // Try playback when page becomes visible
-        // --------------------------------------------------
-
-        document.addEventListener(
-            "visibilitychange",
-            function () {
+                // ------------------------------------------
+                // Network error
+                // ------------------------------------------
 
                 if (
-                    document.visibilityState === "visible" &&
-                    video.paused
+                    data.type ===
+                    Hls.ErrorTypes.NETWORK_ERROR
                 ) {
 
-                    playVideo();
+                    console.warn(
+                        "BACKGROUND VIDEO: Network error. Retrying..."
+                    );
+
+
+                    setTimeout(
+                        function () {
+
+                            try {
+
+                                hls.startLoad();
+
+                            }
+                            catch (error) {
+
+                                console.error(
+                                    "HLS restart failed:",
+                                    error
+                                );
+
+                            }
+
+                        },
+                        2000
+                    );
+
+                }
+
+
+                // ------------------------------------------
+                // Media error
+                // ------------------------------------------
+
+                else if (
+                    data.type ===
+                    Hls.ErrorTypes.MEDIA_ERROR
+                ) {
+
+                    console.warn(
+                        "BACKGROUND VIDEO: Media error. Recovering..."
+                    );
+
+
+                    try {
+
+                        hls.recoverMediaError();
+
+                    }
+                    catch (error) {
+
+                        console.error(
+                            "Media recovery failed:",
+                            error
+                        );
+
+                    }
+
+                }
+
+
+                // ------------------------------------------
+                // Other fatal error
+                // ------------------------------------------
+
+                else {
+
+                    console.error(
+                        "BACKGROUND VIDEO: Fatal HLS error."
+                    );
 
                 }
 
@@ -369,69 +391,23 @@ function loadM3U8Video() {
         );
 
 
-    // ==================================================
-    // NATIVE HLS
-    // Safari / iPhone / iPad
-    // ==================================================
-
-    } else if (
-        video.canPlayType(
-            "application/vnd.apple.mpegurl"
-        )
-    ) {
-
-        console.log(
-            "Browser supports native HLS."
-        );
-
-
-        video.src = m3u8VideoURL;
-
-
-        video.addEventListener(
-            "loadedmetadata",
-            function () {
-
-                console.log(
-                    "Native HLS metadata loaded."
-                );
-
-                playVideo();
-
-            }
-        );
-
-
-        video.addEventListener(
-            "error",
-            function () {
-
-                console.error(
-                    "Native HLS error:",
-                    video.error
-                );
-
-            }
-        );
+        return;
+    }
 
 
     // ==================================================
     // HLS NOT SUPPORTED
     // ==================================================
 
-    } else {
-
-        console.error(
-            "This browser does not support HLS playback."
-        );
-
-    }
+    console.error(
+        "BACKGROUND VIDEO: HLS is not supported by this browser."
+    );
 
 }
 
 
 // ======================================================
-// START BACKGROUND VIDEO
+// START VIDEO AFTER PAGE LOAD
 // ======================================================
 
 if (
@@ -443,7 +419,8 @@ if (
         loadM3U8Video
     );
 
-} else {
+}
+else {
 
     loadM3U8Video();
 
@@ -451,7 +428,7 @@ if (
 
 
 // ======================================================
-// AUDIO STREAM PLAYER
+// AUDIO STREAMS
 // ======================================================
 
 const audioFiles = [
@@ -473,33 +450,41 @@ const audioFiles = [
 ];
 
 
-let currentAudio = new Audio();
+let currentAudio =
+    new Audio();
 
-let currentPlayingIndex = null;
+let currentPlayingIndex =
+    null;
 
 
 // ======================================================
-// AUDIO PLAYER FUNCTION
+// PLAY AUDIO
 // ======================================================
 
 function playAudio(index) {
 
-    // Check audio URL
+
+    // --------------------------------------------------
+    // Validate index
+    // --------------------------------------------------
+
     if (
         !audioFiles[index]
     ) {
 
         console.error(
-            "Audio URL not found for index:",
+            "Invalid audio index:",
             index
         );
 
         return;
-
     }
 
 
+    // --------------------------------------------------
     // Get audio items
+    // --------------------------------------------------
+
     const audioItems =
         document.querySelectorAll(
             ".audio-item"
@@ -518,16 +503,17 @@ function playAudio(index) {
         );
 
         return;
-
     }
 
 
     const clickedImg =
-        clickedItem.querySelector("img");
+        clickedItem.querySelector(
+            "img"
+        );
 
 
     // ==================================================
-    // TOGGLE CURRENT TRACK OFF
+    // STOP CURRENT TRACK
     // ==================================================
 
     if (
@@ -538,6 +524,7 @@ function playAudio(index) {
         currentAudio.pause();
 
         currentAudio.currentTime = 0;
+
 
         clickedItem.classList.remove(
             "pop-up"
@@ -558,10 +545,11 @@ function playAudio(index) {
         );
 
 
-        currentPlayingIndex = null;
+        currentPlayingIndex =
+            null;
+
 
         return;
-
     }
 
 
@@ -581,7 +569,7 @@ function playAudio(index) {
 
 
     // ==================================================
-    // RESET PREVIOUS VISUAL STATE
+    // RESET PREVIOUS ITEM
     // ==================================================
 
     if (
@@ -621,7 +609,7 @@ function playAudio(index) {
 
 
     // ==================================================
-    // LOAD NEW AUDIO
+    // LOAD AUDIO
     // ==================================================
 
     currentAudio.src =
@@ -632,31 +620,36 @@ function playAudio(index) {
 
 
     console.log(
-        "Playing audio:",
+        "AUDIO: Loading",
         audioFiles[index]
     );
 
 
-    const audioPromise =
+    // ==================================================
+    // PLAY AUDIO
+    // ==================================================
+
+    const playPromise =
         currentAudio.play();
 
 
     if (
-        audioPromise !== undefined
+        playPromise !== undefined
     ) {
 
-        audioPromise
+        playPromise
             .then(() => {
 
                 console.log(
-                    "Audio playback started."
+                    "AUDIO: Playing channel",
+                    index
                 );
 
             })
             .catch((error) => {
 
                 console.error(
-                    "Audio playback error:",
+                    "AUDIO: Playback error:",
                     error
                 );
 
@@ -666,7 +659,7 @@ function playAudio(index) {
 
 
     // ==================================================
-    // ACTIVE VISUAL STATE
+    // VISUAL STATE
     // ==================================================
 
     clickedItem.classList.add(
@@ -695,7 +688,7 @@ function playAudio(index) {
 
 
 // ======================================================
-// AUDIO ERROR HANDLING
+// AUDIO ERROR
 // ======================================================
 
 currentAudio.addEventListener(
@@ -703,7 +696,7 @@ currentAudio.addEventListener(
     function () {
 
         console.error(
-            "Audio stream error:",
+            "AUDIO ERROR:",
             currentAudio.error
         );
 
@@ -719,15 +712,15 @@ currentAudio.addEventListener(
     "ended",
     function () {
 
+        const audioItems =
+            document.querySelectorAll(
+                ".audio-item"
+            );
+
+
         if (
             currentPlayingIndex !== null
         ) {
-
-            const audioItems =
-                document.querySelectorAll(
-                    ".audio-item"
-                );
-
 
             const currentItem =
                 audioItems[
@@ -766,7 +759,8 @@ currentAudio.addEventListener(
         );
 
 
-        currentPlayingIndex = null;
+        currentPlayingIndex =
+            null;
 
     }
 );
@@ -786,7 +780,6 @@ document.addEventListener(
         ) {
 
             return;
-
         }
 
 
