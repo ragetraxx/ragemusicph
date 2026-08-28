@@ -10,7 +10,6 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <!-- Prevents unnecessary Referer information from being sent -->
     <meta
         name="referrer"
         content="no-referrer"
@@ -19,20 +18,11 @@
     <title>Rage Media Group</title>
 
 
-    <!-- ==========================================
-         HLS.JS
-         MUST LOAD BEFORE script.js
-         ========================================== -->
-
-    <script
-        src="https://cdn.jsdelivr.net/npm/hls.js@latest">
-    </script>
+    <!-- HLS.js -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
 
-    <!-- ==========================================
-         STYLESHEET
-         ========================================== -->
-
+    <!-- Your CSS -->
     <link
         rel="stylesheet"
         href="styles.css"
@@ -55,9 +45,17 @@
         loop
         playsinline
         preload="auto"
+        crossorigin="anonymous"
         aria-hidden="true"
     >
+
+        <source
+            src="https://hls.cdn-surfline.com/east-au/ph-sabangbeach/playlist.m3u8"
+            type="application/vnd.apple.mpegurl"
+        >
+
         Your browser does not support HTML5 video.
+
     </video>
 
 
@@ -87,9 +85,7 @@
         >
 
 
-            <!-- ======================================
-                 RAGE MUSIC PHILIPPINES
-                 ====================================== -->
+            <!-- Rage Music Philippines -->
 
             <div
                 class="audio-item"
@@ -114,9 +110,7 @@
             </div>
 
 
-            <!-- ======================================
-                 CLUBMIX
-                 ====================================== -->
+            <!-- Clubmix -->
 
             <div
                 class="audio-item"
@@ -141,9 +135,7 @@
             </div>
 
 
-            <!-- ======================================
-                 EMOTIONS
-                 ====================================== -->
+            <!-- Emotions -->
 
             <div
                 class="audio-item"
@@ -168,9 +160,7 @@
             </div>
 
 
-            <!-- ======================================
-                 SCREAM RADIO
-                 ====================================== -->
+            <!-- Scream Radio -->
 
             <div
                 class="audio-item"
@@ -195,9 +185,7 @@
             </div>
 
 
-            <!-- ======================================
-                 VIBE RADIO
-                 ====================================== -->
+            <!-- Vibe Radio -->
 
             <div
                 class="audio-item"
@@ -222,9 +210,7 @@
             </div>
 
 
-            <!-- ======================================
-                 HOT HIPHOP AND RNB
-                 ====================================== -->
+            <!-- Hot Hiphop And RnB -->
 
             <div
                 class="audio-item"
@@ -249,9 +235,7 @@
             </div>
 
 
-            <!-- ======================================
-                 IMIX RADIO
-                 ====================================== -->
+            <!-- iMix Radio -->
 
             <div
                 class="audio-item"
@@ -283,11 +267,9 @@
 
     <!-- ==========================================
          JAVASCRIPT
-         Load AFTER the HTML elements
          ========================================== -->
 
     <script src="script.js"></script>
-
 
 </body>
 
