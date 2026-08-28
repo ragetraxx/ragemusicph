@@ -9,7 +9,7 @@
 // ======================================================
 
 const VIDEO_URL =
-    "https://hls.cdn-surfline.com/east-au/ph-sabangbeach/playlist.m3u8";
+    "https://zssd-kijami.hls.camzonecdn.com/CamzoneStreams/zssd-kijami/Playlist.m3u8";
 
 
 // Keep HLS instance globally available
