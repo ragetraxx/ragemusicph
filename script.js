@@ -9,7 +9,7 @@
 // ======================================================
 
 const VIDEO_URL =
-    "https://zssd-kijami.hls.camzonecdn.com/CamzoneStreams/zssd-kijami/Playlist.m3u8";
+    "https://s92.ipcamlive.com/streams/5cvhfvmqcrxtjcd4z/stream.m3u8";
 
 
 // Keep HLS instance globally available
