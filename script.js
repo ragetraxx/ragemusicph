@@ -9,7 +9,7 @@
 // ======================================================
 
 const VIDEO_URL =
-    "https://s92.ipcamlive.com/streams/5cvhfvmqcrxtjcd4z/stream.m3u8";
+    "https://s30.ipcamlive.com/streams/1ehj4y9puomgafnbi/stream.m3u8";
 
 
 // Keep HLS instance globally available
