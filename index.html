@@ -3,30 +3,18 @@
 
 <head>
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <meta
-        name="referrer"
-        content="no-referrer"
-    >
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
     <title>Rage Media Group</title>
 
     <!-- JW Player Library -->
     <script src="https://ssl.p.jwpcdn.com/player/v/8.49.5/jwplayer.js"></script>
 
-    <!-- HLS.js -->
+    <!-- HLS.js Library -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
     <!-- CSS -->
-    <link
-        rel="stylesheet"
-        href="styles.css"
-    >
+    <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
@@ -34,7 +22,6 @@
     <!-- ==========================================
          BACKGROUND HLS VIDEO
          ========================================== -->
-
     <video
         id="bg-video"
         autoplay
@@ -42,43 +29,23 @@
         playsinline
         loop
         preload="auto"
-        crossorigin="anonymous"
         aria-hidden="true"
-    >
-        <source
-            src="https://hls.cdn-surfline.com/east-au/ph-sabangbeach/playlist.m3u8"
-            type="application/vnd.apple.mpegurl"
-        >
-    </video>
-
+    ></video>
 
     <!-- ==========================================
          DARK OVERLAY
          ========================================== -->
-
-    <div
-        class="overlay"
-        aria-hidden="true">
-    </div>
-
+    <div class="overlay" aria-hidden="true"></div>
 
     <!-- ==========================================
          MAIN CONTENT
          ========================================== -->
-
     <main class="container">
-
         <h1>Click to Listen</h1>
 
-
-        <div
-            class="audio-list"
-            role="region"
-            aria-label="Audio Channels"
-        >
+        <div class="audio-list" role="region" aria-label="Audio Channels">
 
             <!-- 1. RAGE MUSIC PHILIPPINES -->
-
             <div
                 class="audio-item"
                 onclick="playAudio(0)"
@@ -86,24 +53,11 @@
                 tabindex="0"
                 aria-label="Play Rage Music Philippines"
             >
-
-                <img
-                    src="https://i.imgur.com/a3iXI35.png"
-                    alt="Rage Music Philippines logo"
-                >
-
-                <button
-                    type="button"
-                    tabindex="-1"
-                >
-                    Rage Music Philippines
-                </button>
-
+                <img src="https://i.imgur.com/a3iXI35.png" alt="Rage Music Philippines logo">
+                <button type="button" tabindex="-1">Rage Music Philippines</button>
             </div>
 
-
             <!-- 2. CLUBMIX -->
-
             <div
                 class="audio-item"
                 onclick="playAudio(1)"
@@ -111,24 +65,11 @@
                 tabindex="0"
                 aria-label="Play Clubmix"
             >
-
-                <img
-                    src="https://i.imgur.com/mtxns7R.png"
-                    alt="Clubmix logo"
-                >
-
-                <button
-                    type="button"
-                    tabindex="-1"
-                >
-                    Clubmix
-                </button>
-
+                <img src="https://i.imgur.com/mtxns7R.png" alt="Clubmix logo">
+                <button type="button" tabindex="-1">Clubmix</button>
             </div>
 
-
             <!-- 3. EMOTIONS -->
-
             <div
                 class="audio-item"
                 onclick="playAudio(2)"
@@ -136,24 +77,11 @@
                 tabindex="0"
                 aria-label="Play Emotions"
             >
-
-                <img
-                    src="https://i.imgur.com/nOBT9dU.png"
-                    alt="Emotions logo"
-                >
-
-                <button
-                    type="button"
-                    tabindex="-1"
-                >
-                    Emotions
-                </button>
-
+                <img src="https://i.imgur.com/nOBT9dU.png" alt="Emotions logo">
+                <button type="button" tabindex="-1">Emotions</button>
             </div>
 
-
             <!-- 4. SCREAM RADIO -->
-
             <div
                 class="audio-item"
                 onclick="playAudio(3)"
@@ -161,24 +89,11 @@
                 tabindex="0"
                 aria-label="Play Scream Radio"
             >
-
-                <img
-                    src="https://i.imgur.com/WhCxsNJ.png"
-                    alt="Scream Radio logo"
-                >
-
-                <button
-                    type="button"
-                    tabindex="-1"
-                >
-                    Scream Radio
-                </button>
-
+                <img src="https://i.imgur.com/WhCxsNJ.png" alt="Scream Radio logo">
+                <button type="button" tabindex="-1">Scream Radio</button>
             </div>
 
-
             <!-- 5. VIBE RADIO -->
-
             <div
                 class="audio-item"
                 onclick="playAudio(4)"
@@ -186,24 +101,11 @@
                 tabindex="0"
                 aria-label="Play Vibe Radio"
             >
-
-                <img
-                    src="https://i.imgur.com/JbkwiBQ.png"
-                    alt="Vibe Radio logo"
-                >
-
-                <button
-                    type="button"
-                    tabindex="-1"
-                >
-                    Vibe Radio
-                </button>
-
+                <img src="https://i.imgur.com/JbkwiBQ.png" alt="Vibe Radio logo">
+                <button type="button" tabindex="-1">Vibe Radio</button>
             </div>
 
-
             <!-- 6. HOT HIPHOP AND RNB -->
-
             <div
                 class="audio-item"
                 onclick="playAudio(5)"
@@ -211,24 +113,11 @@
                 tabindex="0"
                 aria-label="Play Hot Hiphop And RnB"
             >
-
-                <img
-                    src="https://i.imgur.com/nfFWyYR.png"
-                    alt="Hot Hiphop And RnB logo"
-                >
-
-                <button
-                    type="button"
-                    tabindex="-1"
-                >
-                    Hot Hiphop And RnB
-                </button>
-
+                <img src="https://i.imgur.com/nfFWyYR.png" alt="Hot Hiphop And RnB logo">
+                <button type="button" tabindex="-1">Hot Hiphop And RnB</button>
             </div>
 
-
             <!-- 7. IMIX RADIO -->
-
             <div
                 class="audio-item"
                 onclick="playAudio(6)"
@@ -236,35 +125,19 @@
                 tabindex="0"
                 aria-label="Play iMix Radio"
             >
-
-                <img
-                    src="https://i.imgur.com/CLD1X1t.png"
-                    alt="iMix Radio logo"
-                >
-
-                <button
-                    type="button"
-                    tabindex="-1"
-                >
-                    iMix Radio
-                </button>
-
+                <img src="https://i.imgur.com/CLD1X1t.png" alt="iMix Radio logo">
+                <button type="button" tabindex="-1">iMix Radio</button>
             </div>
 
         </div>
-
     </main>
-
 
     <!-- ==========================================
          JAVASCRIPT
          ========================================== -->
-
-    <!-- JW Player License Key -->
     <script>
         jwplayer.key = "XSuP4qMl+9tK17QNb+4+th2Pm9AWgMO/cYH8CI0HGGr7bdjo";
     </script>
-
     <script src="script.js"></script>
 
 </body>
