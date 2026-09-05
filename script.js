@@ -1,6 +1,6 @@
 // ======================================================
 // RAGE MEDIA GROUP
-// BACKGROUND VIDEO + AUDIO PLAYER
+// BACKGROUND VIDEO + JW PLAYER AUDIO ENGINE
 // ======================================================
 
 
@@ -12,7 +12,7 @@ const VIDEO_URL =
     "https://s30.ipcamlive.com/streams/1ehj4y9puomgafnbi/stream.m3u8";
 
 
-// Keep HLS instance globally available
+// Keep HLS instance globally available for background video
 let hlsPlayer = null;
 
 
@@ -71,8 +71,7 @@ function initializeBackgroundVideo() {
 
 
     // ==================================================
-    // NATIVE HLS
-    // Safari / iPhone / iPad
+    // NATIVE HLS (Safari / iOS)
     // ==================================================
 
     if (
@@ -86,9 +85,7 @@ function initializeBackgroundVideo() {
         );
 
 
-        // Use direct source
         video.src = VIDEO_URL;
-
 
         video.load();
 
@@ -100,7 +97,6 @@ function initializeBackgroundVideo() {
                 console.log(
                     "BACKGROUND VIDEO: Metadata loaded."
                 );
-
 
                 startBackgroundVideo();
 
@@ -130,8 +126,7 @@ function initializeBackgroundVideo() {
 
 
     // ==================================================
-    // HLS.JS
-    // Chrome / Firefox / Edge / Android
+    // HLS.JS (Chrome / Firefox / Edge / Android)
     // ==================================================
 
     if (
@@ -176,16 +171,8 @@ function initializeBackgroundVideo() {
             });
 
 
-        // --------------------------------------------------
-        // Attach video
-        // --------------------------------------------------
-
         hlsPlayer.attachMedia(video);
 
-
-        // --------------------------------------------------
-        // Media attached
-        // --------------------------------------------------
 
         hlsPlayer.on(
             Hls.Events.MEDIA_ATTACHED,
@@ -195,7 +182,6 @@ function initializeBackgroundVideo() {
                     "BACKGROUND VIDEO: Media attached."
                 );
 
-
                 hlsPlayer.loadSource(
                     VIDEO_URL
                 );
@@ -203,10 +189,6 @@ function initializeBackgroundVideo() {
             }
         );
 
-
-        // --------------------------------------------------
-        // Manifest loaded
-        // --------------------------------------------------
 
         hlsPlayer.on(
             Hls.Events.MANIFEST_PARSED,
@@ -220,52 +202,11 @@ function initializeBackgroundVideo() {
                     data
                 );
 
-
                 startBackgroundVideo();
 
             }
         );
 
-
-        // --------------------------------------------------
-        // Level loaded
-        // --------------------------------------------------
-
-        hlsPlayer.on(
-            Hls.Events.LEVEL_LOADED,
-            function (
-                event,
-                data
-            ) {
-
-                console.log(
-                    "BACKGROUND VIDEO: Level loaded.",
-                    data
-                );
-
-            }
-        );
-
-
-        // --------------------------------------------------
-        // Fragment loaded
-        // --------------------------------------------------
-
-        hlsPlayer.on(
-            Hls.Events.FRAG_LOADED,
-            function () {
-
-                console.log(
-                    "BACKGROUND VIDEO: Segment loaded."
-                );
-
-            }
-        );
-
-
-        // --------------------------------------------------
-        // HLS errors
-        // --------------------------------------------------
 
         hlsPlayer.on(
             Hls.Events.ERROR,
@@ -280,17 +221,12 @@ function initializeBackgroundVideo() {
                 );
 
 
-                // Non-fatal errors
                 if (!data.fatal) {
 
                     return;
 
                 }
 
-
-                // ------------------------------------------
-                // Network error
-                // ------------------------------------------
 
                 if (
                     data.type ===
@@ -301,8 +237,6 @@ function initializeBackgroundVideo() {
                         "BACKGROUND VIDEO: Network error."
                     );
 
-
-                    // Do not endlessly hammer the CDN
                     setTimeout(
                         function () {
 
@@ -312,7 +246,6 @@ function initializeBackgroundVideo() {
                                     "BACKGROUND VIDEO: Retrying..."
                                 );
 
-
                                 hlsPlayer.startLoad();
 
                             }
@@ -321,14 +254,7 @@ function initializeBackgroundVideo() {
                         5000
                     );
 
-                }
-
-
-                // ------------------------------------------
-                // Media error
-                // ------------------------------------------
-
-                else if (
+                } else if (
                     data.type ===
                     Hls.ErrorTypes.MEDIA_ERROR
                 ) {
@@ -337,13 +263,11 @@ function initializeBackgroundVideo() {
                         "BACKGROUND VIDEO: Media error."
                     );
 
-
                     try {
 
                         hlsPlayer.recoverMediaError();
 
-                    }
-                    catch (error) {
+                    } catch (error) {
 
                         console.error(
                             "BACKGROUND VIDEO: Recovery failed.",
@@ -354,20 +278,6 @@ function initializeBackgroundVideo() {
 
                 }
 
-
-                // ------------------------------------------
-                // Other fatal error
-                // ------------------------------------------
-
-                else {
-
-                    console.error(
-                        "BACKGROUND VIDEO: Fatal error.",
-                        data
-                    );
-
-                }
-
             }
         );
 
@@ -375,10 +285,6 @@ function initializeBackgroundVideo() {
         return;
     }
 
-
-    // ==================================================
-    // HLS NOT SUPPORTED
-    // ==================================================
 
     console.error(
         "BACKGROUND VIDEO: HLS is not supported by this browser."
@@ -436,15 +342,10 @@ function startBackgroundVideo() {
                     );
 
 
-                    // ----------------------------------
-                    // Start after user interaction
-                    // ----------------------------------
-
                     const startAfterInteraction =
                         function () {
 
                             video.muted = true;
-
 
                             video.play()
                                 .then(
@@ -512,42 +413,6 @@ function setupVideoEvents() {
 
 
     video.addEventListener(
-        "loadstart",
-        function () {
-
-            console.log(
-                "BACKGROUND VIDEO: Load started."
-            );
-
-        }
-    );
-
-
-    video.addEventListener(
-        "loadeddata",
-        function () {
-
-            console.log(
-                "BACKGROUND VIDEO: Data loaded."
-            );
-
-        }
-    );
-
-
-    video.addEventListener(
-        "canplay",
-        function () {
-
-            console.log(
-                "BACKGROUND VIDEO: Can play."
-            );
-
-        }
-    );
-
-
-    video.addEventListener(
         "playing",
         function () {
 
@@ -572,18 +437,6 @@ function setupVideoEvents() {
 
 
     video.addEventListener(
-        "stalled",
-        function () {
-
-            console.warn(
-                "BACKGROUND VIDEO: STALLED."
-            );
-
-        }
-    );
-
-
-    video.addEventListener(
         "error",
         function () {
 
@@ -599,23 +452,7 @@ function setupVideoEvents() {
 
 
 // ======================================================
-// START VIDEO
-// ======================================================
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
-
-        setupVideoEvents();
-
-        initializeBackgroundVideo();
-
-    }
-);
-
-
-// ======================================================
-// AUDIO STREAMS
+// AUDIO STREAMS & JW PLAYER ENGINE
 // ======================================================
 
 const audioFiles = [
@@ -637,12 +474,109 @@ const audioFiles = [
 ];
 
 
-let currentAudio =
-    new Audio();
+let jwAudioPlayer = null;
+
+let currentPlayingIndex = null;
 
 
-let currentPlayingIndex =
-    null;
+// Initialize JW Player instance dynamically
+function initializeJWPlayer() {
+
+    // Create a hidden container for JW Player
+    let playerDiv = document.getElementById("jw-audio-container");
+
+    if (!playerDiv) {
+
+        playerDiv = document.createElement("div");
+
+        playerDiv.id = "jw-audio-container";
+
+        playerDiv.style.display = "none";
+
+        document.body.appendChild(playerDiv);
+
+    }
+
+
+    // Initialize JW Player instance
+    jwAudioPlayer = jwplayer("jw-audio-container").setup({
+
+        controls: false,
+
+        height: 1,
+
+        width: 1,
+
+        autostart: false,
+
+        type: "mp3"
+
+    });
+
+
+    // Setup Event Listeners
+    jwAudioPlayer.on("play", function () {
+
+        console.log("JW PLAYER AUDIO: Stream playing.");
+
+    });
+
+
+    jwAudioPlayer.on("buffer", function () {
+
+        console.log("JW PLAYER AUDIO: Buffering...");
+
+    });
+
+
+    jwAudioPlayer.on("error", function (event) {
+
+        console.error("JW PLAYER AUDIO ERROR:", event.message);
+
+    });
+
+
+    jwAudioPlayer.on("complete", function () {
+
+        resetAudioUI();
+
+    });
+
+}
+
+
+// Helper function to reset UI active state
+function resetAudioUI() {
+
+    const audioItems = document.querySelectorAll(".audio-item");
+
+
+    if (currentPlayingIndex !== null) {
+
+        const currentItem = audioItems[currentPlayingIndex];
+
+        if (currentItem) {
+
+            const img = currentItem.querySelector("img");
+
+            currentItem.classList.remove("pop-up");
+
+            if (img) {
+
+                img.classList.remove("spinning");
+
+            }
+
+        }
+
+    }
+
+
+    document.body.classList.remove("dimmed");
+
+    currentPlayingIndex = null;
+
+}
 
 
 // ======================================================
@@ -651,353 +585,139 @@ let currentPlayingIndex =
 
 function playAudio(index) {
 
-    if (
-        !audioFiles[index]
-    ) {
+    if (!audioFiles[index]) {
 
-        console.error(
-            "AUDIO: Invalid index:",
-            index
-        );
+        console.error("AUDIO: Invalid index:", index);
 
         return;
+
     }
 
 
-    const audioItems =
-        document.querySelectorAll(
-            ".audio-item"
-        );
+    const audioItems = document.querySelectorAll(".audio-item");
 
-
-    const clickedItem =
-        audioItems[index];
+    const clickedItem = audioItems[index];
 
 
     if (!clickedItem) {
 
-        console.error(
-            "AUDIO: Audio item not found."
-        );
+        console.error("AUDIO: Audio item not found.");
 
         return;
+
     }
 
 
-    const clickedImg =
-        clickedItem.querySelector(
-            "img"
-        );
+    const clickedImg = clickedItem.querySelector("img");
 
 
-    // ==================================================
-    // TURN CURRENT AUDIO OFF
-    // ==================================================
+    // --------------------------------------------------
+    // TURN CURRENT AUDIO OFF (TOGGLE PAUSE)
+    // --------------------------------------------------
 
     if (
         currentPlayingIndex === index &&
-        !currentAudio.paused
+        jwAudioPlayer.getState() === "playing"
     ) {
 
-        currentAudio.pause();
+        jwAudioPlayer.stop();
 
-        currentAudio.currentTime = 0;
-
-
-        clickedItem.classList.remove(
-            "pop-up"
-        );
-
-
-        if (clickedImg) {
-
-            clickedImg.classList.remove(
-                "spinning"
-            );
-
-        }
-
-
-        document.body.classList.remove(
-            "dimmed"
-        );
-
-
-        currentPlayingIndex =
-            null;
-
+        resetAudioUI();
 
         return;
+
     }
 
 
-    // ==================================================
-    // STOP PREVIOUS AUDIO
-    // ==================================================
+    // --------------------------------------------------
+    // STOP PREVIOUS AUDIO & RESET UI
+    // --------------------------------------------------
 
-    currentAudio.pause();
+    jwAudioPlayer.stop();
 
-    currentAudio.currentTime = 0;
-
-
-    // ==================================================
-    // RESET PREVIOUS VISUAL
-    // ==================================================
-
-    if (
-        currentPlayingIndex !== null
-    ) {
-
-        const previousItem =
-            audioItems[
-                currentPlayingIndex
-            ];
+    resetAudioUI();
 
 
-        if (previousItem) {
+    // --------------------------------------------------
+    // LOAD & PLAY NEW STREAM WITH JW PLAYER
+    // --------------------------------------------------
 
-            const previousImg =
-                previousItem.querySelector(
-                    "img"
-                );
-
-
-            previousItem.classList.remove(
-                "pop-up"
-            );
+    console.log("JW PLAYER AUDIO: Loading channel:", index, audioFiles[index]);
 
 
-            if (previousImg) {
-
-                previousImg.classList.remove(
-                    "spinning"
-                );
-
-            }
-
+    jwAudioPlayer.load([
+        {
+            file: audioFiles[index],
+            type: "mp3"
         }
-
-    }
-
-
-    // ==================================================
-    // LOAD NEW STREAM
-    // ==================================================
-
-    currentAudio.src =
-        audioFiles[index];
+    ]);
 
 
-    currentAudio.load();
+    jwAudioPlayer.play();
 
 
-    console.log(
-        "AUDIO: Loading:",
-        audioFiles[index]
-    );
-
-
-    // ==================================================
-    // PLAY
-    // ==================================================
-
-    currentAudio
-        .play()
-        .then(
-            function () {
-
-                console.log(
-                    "AUDIO: Playing channel:",
-                    index
-                );
-
-            }
-        )
-        .catch(
-            function (error) {
-
-                console.error(
-                    "AUDIO: Playback error:",
-                    error
-                );
-
-            }
-        );
-
-
-    // ==================================================
+    // --------------------------------------------------
     // ACTIVE VISUAL STATE
-    // ==================================================
+    // --------------------------------------------------
 
-    clickedItem.classList.add(
-        "pop-up"
-    );
+    clickedItem.classList.add("pop-up");
 
 
     if (clickedImg) {
 
-        clickedImg.classList.add(
-            "spinning"
-        );
+        clickedImg.classList.add("spinning");
 
     }
 
 
-    document.body.classList.add(
-        "dimmed"
-    );
+    document.body.classList.add("dimmed");
 
 
-    currentPlayingIndex =
-        index;
+    currentPlayingIndex = index;
 
 }
 
 
 // ======================================================
-// AUDIO ERROR
+// INITIALIZATION
 // ======================================================
 
-currentAudio.addEventListener(
-    "error",
-    function () {
+document.addEventListener("DOMContentLoaded", function () {
 
-        console.error(
-            "AUDIO ERROR:",
-            currentAudio.error
-        );
+    setupVideoEvents();
 
-    }
-);
+    initializeBackgroundVideo();
 
+    initializeJWPlayer();
 
-// ======================================================
-// AUDIO PLAYING
-// ======================================================
-
-currentAudio.addEventListener(
-    "playing",
-    function () {
-
-        console.log(
-            "AUDIO: Stream playing."
-        );
-
-    }
-);
-
-
-// ======================================================
-// AUDIO WAITING
-// ======================================================
-
-currentAudio.addEventListener(
-    "waiting",
-    function () {
-
-        console.log(
-            "AUDIO: Buffering..."
-        );
-
-    }
-);
-
-
-// ======================================================
-// AUDIO ENDED
-// ======================================================
-
-currentAudio.addEventListener(
-    "ended",
-    function () {
-
-        const audioItems =
-            document.querySelectorAll(
-                ".audio-item"
-            );
-
-
-        if (
-            currentPlayingIndex !== null
-        ) {
-
-            const currentItem =
-                audioItems[
-                    currentPlayingIndex
-                ];
-
-
-            if (currentItem) {
-
-                const img =
-                    currentItem.querySelector(
-                        "img"
-                    );
-
-
-                currentItem.classList.remove(
-                    "pop-up"
-                );
-
-
-                if (img) {
-
-                    img.classList.remove(
-                        "spinning"
-                    );
-
-                }
-
-            }
-
-        }
-
-
-        document.body.classList.remove(
-            "dimmed"
-        );
-
-
-        currentPlayingIndex =
-            null;
-
-    }
-);
+});
 
 
 // ======================================================
 // KEYBOARD ACCESSIBILITY
 // ======================================================
 
-document.addEventListener(
-    "keydown",
-    function (e) {
+document.addEventListener("keydown", function (e) {
 
-        if (
-            e.key !== "Enter" &&
-            e.key !== " "
-        ) {
+    if (e.key !== "Enter" && e.key !== " ") {
 
-            return;
-        }
-
-
-        const activeElement =
-            document.activeElement;
-
-
-        if (
-            activeElement &&
-            activeElement.classList.contains(
-                "audio-item"
-            )
-        ) {
-
-            e.preventDefault();
-
-            activeElement.click();
-
-        }
+        return;
 
     }
-);
+
+
+    const activeElement = document.activeElement;
+
+
+    if (
+        activeElement &&
+        activeElement.classList.contains("audio-item")
+    ) {
+
+        e.preventDefault();
+
+        activeElement.click();
+
+    }
+
+});
