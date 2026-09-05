@@ -1,12 +1,13 @@
 // ======================================================
 // RAGE MEDIA GROUP
-// DYNAMIC PROXY HLS ENGINE
+// FREE OPEN-PROXY HLS ENGINE
 // ======================================================
 
 const ORIGINAL_STREAM_URL = "https://hls.cdn-surfline.com/east-au/ph-sabangbeach/playlist.m3u8";
-const PROXY_PREFIX = "https://corsproxy.io/?";
 
-// Helper to wrap URLs through CORS proxy
+// Free public open proxy without API key requirements
+const PROXY_PREFIX = "https://api.allorigins.win/raw?url=";
+
 function getProxiedUrl(url) {
     if (url.startsWith(PROXY_PREFIX)) return url;
     return PROXY_PREFIX + encodeURIComponent(url);
@@ -32,15 +33,14 @@ function initializeBackgroundVideo() {
     video.setAttribute("autoplay", "");
     video.setAttribute("playsinline", "");
 
-    // 1. Chrome / Edge / Firefox / Android (HLS.js Engine with dynamic URL rewriter)
+    // 1. Chrome / Edge / Firefox / Android (HLS.js with dynamic URL Rewriting)
     if (typeof Hls !== "undefined" && Hls.isSupported()) {
-        console.log("BACKGROUND VIDEO: Initializing HLS.js with dynamic proxy loader...");
+        console.log("BACKGROUND VIDEO: Initializing HLS.js with open proxy loader...");
 
         if (hlsPlayer) {
             hlsPlayer.destroy();
         }
 
-        // Custom Loader Class to route every manifest & .ts segment request through the proxy
         class CustomProxyLoader extends Hls.DefaultConfig.loader {
             constructor(config) {
                 super(config);
@@ -71,6 +71,7 @@ function initializeBackgroundVideo() {
         });
 
         hlsPlayer.on(Hls.Events.MANIFEST_PARSED, function () {
+            console.log("BACKGROUND VIDEO: Manifest parsed successfully!");
             startPlayback(video);
         });
 
@@ -89,7 +90,7 @@ function initializeBackgroundVideo() {
         return;
     }
 
-    // 2. Safari / iOS (Native HLS via proxied manifest)
+    // 2. Safari / iOS (Native HLS)
     if (video.canPlayType("application/vnd.apple.mpegurl")) {
         console.log("BACKGROUND VIDEO: Native Safari HLS detected.");
         video.src = getProxiedUrl(ORIGINAL_STREAM_URL);
@@ -110,7 +111,7 @@ function startPlayback(video) {
 
     if (playPromise !== undefined) {
         playPromise.catch(function (error) {
-            console.warn("Autoplay blocked, waiting for user gesture...", error);
+            console.warn("Autoplay blocked by browser policy. Waiting for touch/click...", error);
             const kickstart = function () {
                 video.muted = true;
                 video.play();
