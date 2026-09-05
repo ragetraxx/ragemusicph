@@ -4,7 +4,7 @@
 // ======================================================
 
 // Primary live background HLS video stream
-const VIDEO_URL = "https://s30.ipcamlive.com/streams/1ehj4y9puomgafnbi/stream.m3u8";
+const VIDEO_URL = "https://hls.cdn-surfline.com/east-au/ph-sabangbeach/playlist.m3u8";
 
 let hlsPlayer = null;
 
