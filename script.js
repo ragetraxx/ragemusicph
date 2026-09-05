@@ -1,9 +1,8 @@
 // ======================================================
 // RAGE MEDIA GROUP
-// BACKGROUND VIDEO + AUDIO PLAYER ENGINE
+// BACKGROUND VIDEO (MUTED AUTOPLAY) + AUDIO PLAYER ENGINE
 // ======================================================
 
-// Primary Sabang Beach HLS Live Video Stream
 const VIDEO_URL = "https://hls.cdn-surfline.com/east-au/ph-sabangbeach/playlist.m3u8";
 
 let hlsPlayer = null;
@@ -20,9 +19,9 @@ function initializeBackgroundVideo() {
         return;
     }
 
-    console.log("BACKGROUND VIDEO: Initializing Sabang Beach live stream...");
+    console.log("BACKGROUND VIDEO: Initializing muted autoplay stream...");
 
-    // Attributes required for seamless autoplay policy compliance
+    // Strictly enforce muted state for unblocked autoplay policy compliance
     video.muted = true;
     video.autoplay = true;
     video.playsInline = true;
@@ -67,48 +66,42 @@ function initializeBackgroundVideo() {
             maxMaxBufferLength: 60,
             liveSyncDurationCount: 3,
             liveMaxLatencyDurationCount: 6,
-            manifestLoadingMaxRetry: 5,
-            levelLoadingMaxRetry: 5,
-            fragLoadingMaxRetry: 5,
-            manifestLoadingRetryDelay: 2000,
-            levelLoadingRetryDelay: 2000,
-            fragLoadingRetryDelay: 2000
+            manifestLoadingMaxRetry: 10,
+            levelLoadingMaxRetry: 10,
+            fragLoadingMaxRetry: 10,
+            manifestLoadingRetryDelay: 1000,
+            levelLoadingRetryDelay: 1000,
+            fragLoadingRetryDelay: 1000
         });
 
         hlsPlayer.attachMedia(video);
 
         hlsPlayer.on(Hls.Events.MEDIA_ATTACHED, function () {
-            console.log("BACKGROUND VIDEO: Media attached successfully.");
+            console.log("BACKGROUND VIDEO: Media attached.");
             hlsPlayer.loadSource(VIDEO_URL);
         });
 
-        hlsPlayer.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
-            console.log("BACKGROUND VIDEO: Manifest parsed, starting video playback.", data);
+        hlsPlayer.on(Hls.Events.MANIFEST_PARSED, function () {
+            console.log("BACKGROUND VIDEO: Manifest parsed, triggering autoplay.");
             startBackgroundVideo();
         });
 
         hlsPlayer.on(Hls.Events.ERROR, function (event, data) {
-            console.error("BACKGROUND VIDEO: HLS Error encountered:", data);
-
-            if (!data.fatal) {
-                return;
-            }
+            if (!data.fatal) return;
 
             switch (data.type) {
                 case Hls.ErrorTypes.NETWORK_ERROR:
-                    console.warn("BACKGROUND VIDEO: Network error, retrying stream connection...");
+                    console.warn("BACKGROUND VIDEO: Network disruption, reconnecting...");
                     setTimeout(function () {
-                        if (hlsPlayer) {
-                            hlsPlayer.startLoad();
-                        }
-                    }, 3000);
+                        if (hlsPlayer) hlsPlayer.startLoad();
+                    }, 1000);
                     break;
                 case Hls.ErrorTypes.MEDIA_ERROR:
-                    console.warn("BACKGROUND VIDEO: Decoding error, attempting media recovery...");
+                    console.warn("BACKGROUND VIDEO: Media decoding glitch, recovering...");
                     hlsPlayer.recoverMediaError();
                     break;
                 default:
-                    console.error("BACKGROUND VIDEO: Unrecoverable error, rebuilding player engine...");
+                    console.error("BACKGROUND VIDEO: Unrecoverable error, re-initializing...");
                     hlsPlayer.destroy();
                     initializeBackgroundVideo();
                     break;
@@ -118,17 +111,18 @@ function initializeBackgroundVideo() {
         return;
     }
 
-    console.error("BACKGROUND VIDEO: HLS streaming is not supported on this browser.");
+    console.error("BACKGROUND VIDEO: HLS is not supported on this browser.");
 }
 
 // ======================================================
-// AUTOPLAY EXECUTION WITH USER INTERACTION FALLBACK
+// MUTED AUTOPLAY ENGINE
 // ======================================================
 
 function startBackgroundVideo() {
     const video = document.getElementById("bg-video");
     if (!video) return;
 
+    // Enforce mute state before play call
     video.muted = true;
 
     const playPromise = video.play();
@@ -136,41 +130,50 @@ function startBackgroundVideo() {
     if (playPromise !== undefined) {
         playPromise
             .then(function () {
-                console.log("BACKGROUND VIDEO: Sabang Beach stream playing actively.");
+                console.log("BACKGROUND VIDEO: Muted autoplay running continuously.");
             })
             .catch(function (error) {
-                console.warn("BACKGROUND VIDEO: Autoplay blocked. Waiting for first interaction...", error);
+                console.warn("BACKGROUND VIDEO: Initial play call deferred, attaching fallbacks...", error);
 
-                const unlockVideoOnInteraction = function () {
+                const unlockAutoplay = function () {
                     video.muted = true;
-                    video.play()
-                        .then(function () {
-                            console.log("BACKGROUND VIDEO: Playback started after interaction.");
-                        })
-                        .catch(function (err) {
-                            console.error("BACKGROUND VIDEO: Playback failure:", err);
-                        });
-
-                    document.removeEventListener("click", unlockVideoOnInteraction);
-                    document.removeEventListener("touchstart", unlockVideoOnInteraction);
+                    video.play().catch(function (err) {
+                        console.error("BACKGROUND VIDEO: Play re-attempt failed:", err);
+                    });
                 };
 
-                document.addEventListener("click", unlockVideoOnInteraction, { once: true });
-                document.addEventListener("touchstart", unlockVideoOnInteraction, { once: true });
+                ["click", "touchstart", "scroll"].forEach(function (evt) {
+                    document.addEventListener(evt, unlockAutoplay, { once: true });
+                });
             });
     }
 }
 
 // ======================================================
-// VIDEO EVENT MONITORING
+// CONTINUOUS PLAYBACK GUARANTEE HOOKS
 // ======================================================
 
 function setupVideoEvents() {
     const video = document.getElementById("bg-video");
     if (!video) return;
 
+    // Keep muted at all times
+    video.addEventListener("volumechange", function () {
+        if (!video.muted) {
+            video.muted = true;
+        }
+    });
+
+    // Auto-resume if browser or OS forces a pause
+    video.addEventListener("pause", function () {
+        console.warn("BACKGROUND VIDEO: Pause detected, enforcing auto-resume...");
+        video.play().catch(function (e) {
+            console.error("BACKGROUND VIDEO: Resume error:", e);
+        });
+    });
+
     video.addEventListener("playing", function () {
-        console.log("BACKGROUND VIDEO: Playback established.");
+        console.log("BACKGROUND VIDEO: Stream playing smoothly.");
     });
 
     video.addEventListener("waiting", function () {
@@ -178,7 +181,7 @@ function setupVideoEvents() {
     });
 
     video.addEventListener("error", function () {
-        console.error("BACKGROUND VIDEO: Native video error:", video.error);
+        console.error("BACKGROUND VIDEO: Video element error:", video.error);
     });
 }
 
@@ -213,13 +216,12 @@ function playAudio(index) {
     const clickedItem = audioItems[index];
 
     if (!clickedItem) {
-        console.error("AUDIO: Selected channel element not found.");
+        console.error("AUDIO: Audio item element missing.");
         return;
     }
 
     const clickedImg = clickedItem.querySelector("img");
 
-    // Toggle pause if active channel is selected again
     if (currentPlayingIndex === index && !currentAudio.paused) {
         currentAudio.pause();
         currentAudio.currentTime = 0;
@@ -227,12 +229,10 @@ function playAudio(index) {
         return;
     }
 
-    // Reset playback state
     currentAudio.pause();
     currentAudio.currentTime = 0;
     resetAudioUI();
 
-    // Load and play selected stream
     currentAudio.src = audioFiles[index];
     currentAudio.load();
 
