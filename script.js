@@ -1,6 +1,6 @@
 // ======================================================
 // RAGE MEDIA GROUP
-// BACKGROUND VIDEO (MUTED AUTOPLAY) + AUDIO PLAYER ENGINE
+// CROSS-BROWSER BACKGROUND VIDEO + AUDIO ENGINE
 // ======================================================
 
 const VIDEO_URL = "https://hls.cdn-surfline.com/east-au/ph-sabangbeach/playlist.m3u8";
@@ -19,9 +19,10 @@ function initializeBackgroundVideo() {
         return;
     }
 
-    console.log("BACKGROUND VIDEO: Initializing muted autoplay stream...");
+    // Force crossOrigin attribute for stream CORS compatibility
+    video.crossOrigin = "anonymous";
 
-    // Strictly enforce muted state for unblocked autoplay policy compliance
+    // Standard video attributes
     video.muted = true;
     video.autoplay = true;
     video.playsInline = true;
@@ -31,28 +32,28 @@ function initializeBackgroundVideo() {
     video.setAttribute("autoplay", "");
     video.setAttribute("playsinline", "");
 
-    // 1. Safari / iOS Native HLS Engine
+    // 1. Safari & iOS (Native HLS Engine)
     if (video.canPlayType("application/vnd.apple.mpegurl")) {
-        console.log("BACKGROUND VIDEO: Native HLS detected.");
+        console.log("BACKGROUND VIDEO: Using Native Safari HLS engine.");
+        
         video.src = VIDEO_URL;
-        video.load();
 
-        video.addEventListener("loadedmetadata", function () {
+        // Try playing as soon as metadata or canplay triggers
+        const handleNativePlay = function () {
             startBackgroundVideo();
-        }, { once: true });
+        };
 
-        video.addEventListener("canplay", function () {
-            if (video.paused) {
-                startBackgroundVideo();
-            }
-        });
+        video.addEventListener("loadedmetadata", handleNativePlay, { once: true });
+        video.addEventListener("canplay", handleNativePlay, { once: true });
 
+        // Fallback kickstart
+        video.load();
         return;
     }
 
-    // 2. Chrome / Firefox / Edge / Android HLS.js Engine
+    // 2. Chrome, Edge, Firefox (HLS.js Engine via MSE)
     if (typeof Hls !== "undefined" && Hls.isSupported()) {
-        console.log("BACKGROUND VIDEO: HLS.js engine loading...");
+        console.log("BACKGROUND VIDEO: Using HLS.js engine for Chromium/Firefox.");
 
         if (hlsPlayer) {
             hlsPlayer.destroy();
@@ -61,28 +62,27 @@ function initializeBackgroundVideo() {
         hlsPlayer = new Hls({
             enableWorker: true,
             lowLatencyMode: true,
+            xhrSetup: function (xhr) {
+                // Helps bypass basic CORS/Referrer header drops on CDNs
+                xhr.withCredentials = false;
+            },
             backBufferLength: 30,
             maxBufferLength: 30,
             maxMaxBufferLength: 60,
-            liveSyncDurationCount: 3,
-            liveMaxLatencyDurationCount: 6,
             manifestLoadingMaxRetry: 10,
             levelLoadingMaxRetry: 10,
-            fragLoadingMaxRetry: 10,
-            manifestLoadingRetryDelay: 1000,
-            levelLoadingRetryDelay: 1000,
-            fragLoadingRetryDelay: 1000
+            fragLoadingMaxRetry: 10
         });
 
         hlsPlayer.attachMedia(video);
 
         hlsPlayer.on(Hls.Events.MEDIA_ATTACHED, function () {
-            console.log("BACKGROUND VIDEO: Media attached.");
+            console.log("BACKGROUND VIDEO: Media attached to HLS.js.");
             hlsPlayer.loadSource(VIDEO_URL);
         });
 
         hlsPlayer.on(Hls.Events.MANIFEST_PARSED, function () {
-            console.log("BACKGROUND VIDEO: Manifest parsed, triggering autoplay.");
+            console.log("BACKGROUND VIDEO: Manifest parsed, starting video.");
             startBackgroundVideo();
         });
 
@@ -91,17 +91,17 @@ function initializeBackgroundVideo() {
 
             switch (data.type) {
                 case Hls.ErrorTypes.NETWORK_ERROR:
-                    console.warn("BACKGROUND VIDEO: Network disruption, reconnecting...");
+                    console.warn("BACKGROUND VIDEO: Network error encountered. Retrying...");
                     setTimeout(function () {
                         if (hlsPlayer) hlsPlayer.startLoad();
                     }, 1000);
                     break;
                 case Hls.ErrorTypes.MEDIA_ERROR:
-                    console.warn("BACKGROUND VIDEO: Media decoding glitch, recovering...");
+                    console.warn("BACKGROUND VIDEO: Media decoding error. Recovering...");
                     hlsPlayer.recoverMediaError();
                     break;
                 default:
-                    console.error("BACKGROUND VIDEO: Unrecoverable error, re-initializing...");
+                    console.error("BACKGROUND VIDEO: Fatal stream error. Re-initializing...");
                     hlsPlayer.destroy();
                     initializeBackgroundVideo();
                     break;
@@ -111,18 +111,17 @@ function initializeBackgroundVideo() {
         return;
     }
 
-    console.error("BACKGROUND VIDEO: HLS is not supported on this browser.");
+    console.error("BACKGROUND VIDEO: Browser does not support HLS playback.");
 }
 
 // ======================================================
-// MUTED AUTOPLAY ENGINE
+// RELIABLE MUTED AUTOPLAY ENGINE
 // ======================================================
 
 function startBackgroundVideo() {
     const video = document.getElementById("bg-video");
     if (!video) return;
 
-    // Enforce mute state before play call
     video.muted = true;
 
     const playPromise = video.play();
@@ -130,58 +129,42 @@ function startBackgroundVideo() {
     if (playPromise !== undefined) {
         playPromise
             .then(function () {
-                console.log("BACKGROUND VIDEO: Muted autoplay running continuously.");
+                console.log("BACKGROUND VIDEO: Playing successfully.");
             })
             .catch(function (error) {
-                console.warn("BACKGROUND VIDEO: Initial play call deferred, attaching fallbacks...", error);
+                console.warn("BACKGROUND VIDEO: Playback blocked by browser policy. Adding interaction triggers.", error);
 
-                const unlockAutoplay = function () {
+                const forcePlay = function () {
                     video.muted = true;
-                    video.play().catch(function (err) {
-                        console.error("BACKGROUND VIDEO: Play re-attempt failed:", err);
+                    video.play().catch(function (e) {
+                        console.error("BACKGROUND VIDEO: Secondary play attempt failed:", e);
                     });
                 };
 
-                ["click", "touchstart", "scroll"].forEach(function (evt) {
-                    document.addEventListener(evt, unlockAutoplay, { once: true });
+                ["click", "touchstart", "scroll", "keydown"].forEach(function (evt) {
+                    document.addEventListener(evt, forcePlay, { once: true });
                 });
             });
     }
 }
 
 // ======================================================
-// CONTINUOUS PLAYBACK GUARANTEE HOOKS
+// VIDEO MONITORING HOOKS
 // ======================================================
 
 function setupVideoEvents() {
     const video = document.getElementById("bg-video");
     if (!video) return;
 
-    // Keep muted at all times
     video.addEventListener("volumechange", function () {
         if (!video.muted) {
             video.muted = true;
         }
     });
 
-    // Auto-resume if browser or OS forces a pause
     video.addEventListener("pause", function () {
-        console.warn("BACKGROUND VIDEO: Pause detected, enforcing auto-resume...");
-        video.play().catch(function (e) {
-            console.error("BACKGROUND VIDEO: Resume error:", e);
-        });
-    });
-
-    video.addEventListener("playing", function () {
-        console.log("BACKGROUND VIDEO: Stream playing smoothly.");
-    });
-
-    video.addEventListener("waiting", function () {
-        console.log("BACKGROUND VIDEO: Stream buffering...");
-    });
-
-    video.addEventListener("error", function () {
-        console.error("BACKGROUND VIDEO: Video element error:", video.error);
+        console.warn("BACKGROUND VIDEO: Paused unexpectedly. Attempting auto-resume...");
+        video.play().catch(function () {});
     });
 }
 
@@ -202,23 +185,13 @@ const audioFiles = [
 let currentAudio = new Audio();
 let currentPlayingIndex = null;
 
-// ======================================================
-// PLAY AUDIO
-// ======================================================
-
 function playAudio(index) {
-    if (!audioFiles[index]) {
-        console.error("AUDIO: Invalid audio stream index:", index);
-        return;
-    }
+    if (!audioFiles[index]) return;
 
     const audioItems = document.querySelectorAll(".audio-item");
     const clickedItem = audioItems[index];
 
-    if (!clickedItem) {
-        console.error("AUDIO: Audio item element missing.");
-        return;
-    }
+    if (!clickedItem) return;
 
     const clickedImg = clickedItem.querySelector("img");
 
@@ -236,18 +209,13 @@ function playAudio(index) {
     currentAudio.src = audioFiles[index];
     currentAudio.load();
 
-    console.log("AUDIO: Connecting to stream:", audioFiles[index]);
-
     currentAudio
         .play()
         .then(function () {
-            console.log("AUDIO: Playback active for channel:", index);
-
             clickedItem.classList.add("pop-up");
             if (clickedImg) {
                 clickedImg.classList.add("spinning");
             }
-
             document.body.classList.add("dimmed");
             currentPlayingIndex = index;
         })
@@ -256,10 +224,6 @@ function playAudio(index) {
             resetAudioUI();
         });
 }
-
-// ======================================================
-// RESET AUDIO UI HELPER
-// ======================================================
 
 function resetAudioUI() {
     const audioItems = document.querySelectorAll(".audio-item");
@@ -279,12 +243,7 @@ function resetAudioUI() {
     currentPlayingIndex = null;
 }
 
-// ======================================================
-// AUDIO EVENT LISTENERS
-// ======================================================
-
 currentAudio.addEventListener("error", function () {
-    console.error("AUDIO: Stream error occurred:", currentAudio.error);
     resetAudioUI();
 });
 
@@ -301,14 +260,8 @@ document.addEventListener("DOMContentLoaded", function () {
     initializeBackgroundVideo();
 });
 
-// ======================================================
-// KEYBOARD ACCESSIBILITY
-// ======================================================
-
 document.addEventListener("keydown", function (e) {
-    if (e.key !== "Enter" && e.key !== " ") {
-        return;
-    }
+    if (e.key !== "Enter" && e.key !== " ") return;
 
     const activeElement = document.activeElement;
     if (activeElement && activeElement.classList.contains("audio-item")) {
