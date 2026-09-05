@@ -196,11 +196,11 @@ h1 {
     font-size: 18px;
     font-weight: 700;
     cursor: pointer;
-    pointer-events: none; /* Passes click directly to parent .audio-item */
+    pointer-events: none;
 }
 
 /* =====================================================
-   DIMMED STATE (BACKGROUND FOCUS)
+   DIMMED STATE
    ===================================================== */
 
 body.dimmed .overlay {
