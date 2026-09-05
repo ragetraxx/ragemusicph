@@ -1,6 +1,6 @@
 // ======================================================
 // RAGE MEDIA GROUP
-// BACKGROUND VIDEO + JW PLAYER AUDIO ENGINE
+// BACKGROUND VIDEO + AUDIO PLAYER ENGINE
 // ======================================================
 
 
@@ -12,7 +12,7 @@ const VIDEO_URL =
     "https://s30.ipcamlive.com/streams/1ehj4y9puomgafnbi/stream.m3u8";
 
 
-// Keep HLS instance globally available for background video
+// Keep HLS instance globally available
 let hlsPlayer = null;
 
 
@@ -71,7 +71,8 @@ function initializeBackgroundVideo() {
 
 
     // ==================================================
-    // NATIVE HLS (Safari / iOS)
+    // NATIVE HLS
+    // Safari / iPhone / iPad
     // ==================================================
 
     if (
@@ -87,6 +88,7 @@ function initializeBackgroundVideo() {
 
         video.src = VIDEO_URL;
 
+
         video.load();
 
 
@@ -97,6 +99,7 @@ function initializeBackgroundVideo() {
                 console.log(
                     "BACKGROUND VIDEO: Metadata loaded."
                 );
+
 
                 startBackgroundVideo();
 
@@ -126,7 +129,8 @@ function initializeBackgroundVideo() {
 
 
     // ==================================================
-    // HLS.JS (Chrome / Firefox / Edge / Android)
+    // HLS.JS
+    // Chrome / Firefox / Edge / Android
     // ==================================================
 
     if (
@@ -182,6 +186,7 @@ function initializeBackgroundVideo() {
                     "BACKGROUND VIDEO: Media attached."
                 );
 
+
                 hlsPlayer.loadSource(
                     VIDEO_URL
                 );
@@ -201,6 +206,7 @@ function initializeBackgroundVideo() {
                     "BACKGROUND VIDEO: Manifest loaded.",
                     data
                 );
+
 
                 startBackgroundVideo();
 
@@ -237,6 +243,7 @@ function initializeBackgroundVideo() {
                         "BACKGROUND VIDEO: Network error."
                     );
 
+
                     setTimeout(
                         function () {
 
@@ -246,6 +253,7 @@ function initializeBackgroundVideo() {
                                     "BACKGROUND VIDEO: Retrying..."
                                 );
 
+
                                 hlsPlayer.startLoad();
 
                             }
@@ -254,7 +262,9 @@ function initializeBackgroundVideo() {
                         5000
                     );
 
-                } else if (
+                }
+
+                else if (
                     data.type ===
                     Hls.ErrorTypes.MEDIA_ERROR
                 ) {
@@ -263,11 +273,13 @@ function initializeBackgroundVideo() {
                         "BACKGROUND VIDEO: Media error."
                     );
 
+
                     try {
 
                         hlsPlayer.recoverMediaError();
 
-                    } catch (error) {
+                    }
+                    catch (error) {
 
                         console.error(
                             "BACKGROUND VIDEO: Recovery failed.",
@@ -346,6 +358,7 @@ function startBackgroundVideo() {
                         function () {
 
                             video.muted = true;
+
 
                             video.play()
                                 .then(
@@ -452,7 +465,7 @@ function setupVideoEvents() {
 
 
 // ======================================================
-// AUDIO STREAMS & JW PLAYER ENGINE
+// AUDIO STREAMS & ENGINE
 // ======================================================
 
 const audioFiles = [
@@ -474,109 +487,12 @@ const audioFiles = [
 ];
 
 
-let jwAudioPlayer = null;
-
-let currentPlayingIndex = null;
-
-
-// Initialize JW Player instance dynamically
-function initializeJWPlayer() {
-
-    // Create a hidden container for JW Player
-    let playerDiv = document.getElementById("jw-audio-container");
-
-    if (!playerDiv) {
-
-        playerDiv = document.createElement("div");
-
-        playerDiv.id = "jw-audio-container";
-
-        playerDiv.style.display = "none";
-
-        document.body.appendChild(playerDiv);
-
-    }
+let currentAudio =
+    new Audio();
 
 
-    // Initialize JW Player instance
-    jwAudioPlayer = jwplayer("jw-audio-container").setup({
-
-        controls: false,
-
-        height: 1,
-
-        width: 1,
-
-        autostart: false,
-
-        type: "mp3"
-
-    });
-
-
-    // Setup Event Listeners
-    jwAudioPlayer.on("play", function () {
-
-        console.log("JW PLAYER AUDIO: Stream playing.");
-
-    });
-
-
-    jwAudioPlayer.on("buffer", function () {
-
-        console.log("JW PLAYER AUDIO: Buffering...");
-
-    });
-
-
-    jwAudioPlayer.on("error", function (event) {
-
-        console.error("JW PLAYER AUDIO ERROR:", event.message);
-
-    });
-
-
-    jwAudioPlayer.on("complete", function () {
-
-        resetAudioUI();
-
-    });
-
-}
-
-
-// Helper function to reset UI active state
-function resetAudioUI() {
-
-    const audioItems = document.querySelectorAll(".audio-item");
-
-
-    if (currentPlayingIndex !== null) {
-
-        const currentItem = audioItems[currentPlayingIndex];
-
-        if (currentItem) {
-
-            const img = currentItem.querySelector("img");
-
-            currentItem.classList.remove("pop-up");
-
-            if (img) {
-
-                img.classList.remove("spinning");
-
-            }
-
-        }
-
-    }
-
-
-    document.body.classList.remove("dimmed");
-
-    currentPlayingIndex = null;
-
-}
+let currentPlayingIndex =
+    null;
 
 
 // ======================================================
@@ -585,139 +501,318 @@ function resetAudioUI() {
 
 function playAudio(index) {
 
-    if (!audioFiles[index]) {
+    if (
+        !audioFiles[index]
+    ) {
 
-        console.error("AUDIO: Invalid index:", index);
+        console.error(
+            "AUDIO: Invalid index:",
+            index
+        );
 
         return;
-
     }
 
 
-    const audioItems = document.querySelectorAll(".audio-item");
+    const audioItems =
+        document.querySelectorAll(
+            ".audio-item"
+        );
 
-    const clickedItem = audioItems[index];
+
+    const clickedItem =
+        audioItems[index];
 
 
     if (!clickedItem) {
 
-        console.error("AUDIO: Audio item not found.");
+        console.error(
+            "AUDIO: Audio item not found."
+        );
 
         return;
-
     }
 
 
-    const clickedImg = clickedItem.querySelector("img");
+    const clickedImg =
+        clickedItem.querySelector(
+            "img"
+        );
 
 
-    // --------------------------------------------------
+    // ==================================================
     // TURN CURRENT AUDIO OFF (TOGGLE PAUSE)
-    // --------------------------------------------------
+    // ==================================================
 
     if (
         currentPlayingIndex === index &&
-        jwAudioPlayer.getState() === "playing"
+        !currentAudio.paused
     ) {
 
-        jwAudioPlayer.stop();
+        currentAudio.pause();
+
+        currentAudio.currentTime = 0;
+
 
         resetAudioUI();
 
-        return;
 
+        return;
     }
 
 
-    // --------------------------------------------------
+    // ==================================================
     // STOP PREVIOUS AUDIO & RESET UI
-    // --------------------------------------------------
+    // ==================================================
 
-    jwAudioPlayer.stop();
+    currentAudio.pause();
+
+    currentAudio.currentTime = 0;
+
 
     resetAudioUI();
 
 
-    // --------------------------------------------------
-    // LOAD & PLAY NEW STREAM WITH JW PLAYER
-    // --------------------------------------------------
+    // ==================================================
+    // LOAD NEW STREAM
+    // ==================================================
 
-    console.log("JW PLAYER AUDIO: Loading channel:", index, audioFiles[index]);
+    currentAudio.src =
+        audioFiles[index];
 
 
-    jwAudioPlayer.load([
-        {
-            file: audioFiles[index],
-            type: "mp3"
+    currentAudio.load();
+
+
+    console.log(
+        "AUDIO: Loading stream:",
+        audioFiles[index]
+    );
+
+
+    // ==================================================
+    // PLAY STREAM
+    // ==================================================
+
+    currentAudio
+        .play()
+        .then(
+            function () {
+
+                console.log(
+                    "AUDIO: Playing channel:",
+                    index
+                );
+
+
+                // Set visual active state
+                clickedItem.classList.add(
+                    "pop-up"
+                );
+
+
+                if (clickedImg) {
+
+                    clickedImg.classList.add(
+                        "spinning"
+                    );
+
+                }
+
+
+                document.body.classList.add(
+                    "dimmed"
+                );
+
+
+                currentPlayingIndex =
+                    index;
+
+            }
+        )
+        .catch(
+            function (error) {
+
+                console.error(
+                    "AUDIO: Playback error:",
+                    error
+                );
+
+
+                resetAudioUI();
+
+            }
+        );
+
+}
+
+
+// ======================================================
+// RESET AUDIO UI HELPER
+// ======================================================
+
+function resetAudioUI() {
+
+    const audioItems =
+        document.querySelectorAll(
+            ".audio-item"
+        );
+
+
+    if (
+        currentPlayingIndex !== null
+    ) {
+
+        const currentItem =
+            audioItems[
+                currentPlayingIndex
+            ];
+
+
+        if (currentItem) {
+
+            const img =
+                currentItem.querySelector(
+                    "img"
+                );
+
+
+            currentItem.classList.remove(
+                "pop-up"
+            );
+
+
+            if (img) {
+
+                img.classList.remove(
+                    "spinning"
+                );
+
+            }
+
         }
-    ]);
-
-
-    jwAudioPlayer.play();
-
-
-    // --------------------------------------------------
-    // ACTIVE VISUAL STATE
-    // --------------------------------------------------
-
-    clickedItem.classList.add("pop-up");
-
-
-    if (clickedImg) {
-
-        clickedImg.classList.add("spinning");
 
     }
 
 
-    document.body.classList.add("dimmed");
+    document.body.classList.remove(
+        "dimmed"
+    );
 
 
-    currentPlayingIndex = index;
+    currentPlayingIndex =
+        null;
 
 }
+
+
+// ======================================================
+// AUDIO ERROR MONITORING
+// ======================================================
+
+currentAudio.addEventListener(
+    "error",
+    function () {
+
+        console.error(
+            "AUDIO ERROR:",
+            currentAudio.error
+        );
+
+
+        resetAudioUI();
+
+    }
+);
+
+
+// ======================================================
+// AUDIO EVENTS
+// ======================================================
+
+currentAudio.addEventListener(
+    "playing",
+    function () {
+
+        console.log(
+            "AUDIO: Stream playing."
+        );
+
+    }
+);
+
+
+currentAudio.addEventListener(
+    "waiting",
+    function () {
+
+        console.log(
+            "AUDIO: Buffering..."
+        );
+
+    }
+);
+
+
+currentAudio.addEventListener(
+    "ended",
+    function () {
+
+        resetAudioUI();
+
+    }
+);
 
 
 // ======================================================
 // INITIALIZATION
 // ======================================================
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
 
-    setupVideoEvents();
+        setupVideoEvents();
 
-    initializeBackgroundVideo();
+        initializeBackgroundVideo();
 
-    initializeJWPlayer();
-
-});
+    }
+);
 
 
 // ======================================================
 // KEYBOARD ACCESSIBILITY
 // ======================================================
 
-document.addEventListener("keydown", function (e) {
+document.addEventListener(
+    "keydown",
+    function (e) {
 
-    if (e.key !== "Enter" && e.key !== " ") {
+        if (
+            e.key !== "Enter" &&
+            e.key !== " "
+        ) {
 
-        return;
+            return;
+        }
+
+
+        const activeElement =
+            document.activeElement;
+
+
+        if (
+            activeElement &&
+            activeElement.classList.contains(
+                "audio-item"
+            )
+        ) {
+
+            e.preventDefault();
+
+            activeElement.click();
+
+        }
 
     }
-
-
-    const activeElement = document.activeElement;
-
-
-    if (
-        activeElement &&
-        activeElement.classList.contains("audio-item")
-    ) {
-
-        e.preventDefault();
-
-        activeElement.click();
-
-    }
-
-});
+);
